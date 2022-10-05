@@ -17,9 +17,9 @@ public:
     ~MainWindow();
 
 private slots:
-    void startNewGame();
-
-    void quitProgram();
+    void start_game();
+    void quit_program();
+    void create_map();
 
 private:
     Ui::MainWindow *ui;

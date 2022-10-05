@@ -9,13 +9,23 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    block.cpp \
+    entrance.cpp \
+    exit.cpp \
     game.cpp \
     main.cpp  \
-    mainwindow.cpp
+    mainwindow.cpp \
+    map.cpp \
+    mapcreator.cpp
 
 HEADERS += \
+    block.h \
+    entrance.h \
+    exit.h \
     game.h \
-    mainwindow.h
+    mainwindow.h \
+    map.h \
+    mapcreator.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
