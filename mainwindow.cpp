@@ -7,8 +7,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    connect(ui->newGame, &QPushButton::clicked, this, &MainWindow::startNewGame);
-    connect(ui->quit, &QPushButton::clicked, this, &MainWindow::quitProgram);
+    connect(ui->new_game, &QPushButton::clicked, this, &MainWindow::start_game);
+    connect(ui->quit, &QPushButton::clicked, this, &MainWindow::quit_program);
+    connect(ui->create_map, &QPushButton::clicked, this, &MainWindow::create_map);
 }
 
 MainWindow::~MainWindow()
@@ -16,15 +17,21 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::startNewGame()
+void MainWindow::start_game()
 {
     Game::Get();
     this->close();
 }
 
 
-void MainWindow::quitProgram()
+void MainWindow::quit_program()
 {
+    this->close();
+}
+
+void MainWindow::create_map()
+{
+    MapCreator::Get();
     this->close();
 }
 

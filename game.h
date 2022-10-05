@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "mapcreator.h"
+
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
@@ -21,9 +23,11 @@ private:
 
     Game();
 
+    //QList<Lemming*> lemmings_alive;
     int scene_width = 1760;
     int scene_height = 960;
     QGraphicsScene *scene;
+    Map *game_map;
 
 };
 

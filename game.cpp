@@ -2,8 +2,8 @@
 
 #include <QGraphicsItem>
 
-Game::Game():QGraphicsView(){
-    // Creating scene
+Game::Game():QGraphicsView()
+{
     scene = new QGraphicsScene(this);
     scene->setSceneRect(0,0,scene_width,scene_height);
 
