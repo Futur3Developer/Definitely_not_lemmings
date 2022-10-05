@@ -3,6 +3,13 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsRectItem>
+#include <QFile>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
+#include <QApplication>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QDir>
 
 #include "block.h"
 #include "entrance.h"
