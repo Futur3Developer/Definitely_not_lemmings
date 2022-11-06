@@ -16,7 +16,10 @@ SOURCES += \
     main.cpp  \
     mainwindow.cpp \
     map.cpp \
-    mapcreator.cpp
+    mapconversionmanager.cpp \
+    mapconverter.cpp \
+    mapcreator.cpp \
+    mapxmlconverter.cpp
 
 HEADERS += \
     block.h \
@@ -25,7 +28,10 @@ HEADERS += \
     game.h \
     mainwindow.h \
     map.h \
-    mapcreator.h
+    mapconversionmanager.h \
+    mapconverter.h \
+    mapcreator.h \
+    mapxmlconverter.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

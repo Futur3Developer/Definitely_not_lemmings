@@ -18,32 +18,23 @@ class MapCreator: public QGraphicsView
 {
     Q_OBJECT
 public:
-    MapCreator(const MapCreator&) = delete;
+    MapCreator();
+    MapCreator(Map *map);
 
-    static MapCreator& Get()
-    {
-        static MapCreator map_creator_Instance;
-        return map_creator_Instance;
-    }
+    Map *get_map();
+    void set_map(Map* map);
 
 private:
-    MapCreator();
-
     void set_view_configuration();
     void initialize_map_components();
-
-    void add_gui_panel_boundary();
-    void add_entrance();
-    void add_exit();
-    void add_block();
     void add_guideline(QString text, int x_pos, int y_pos);
     void add_map_creation_guidelines();
     void add_button(QPushButton *button, int aleft, const QString &text);
     void add_buttons();
 
-    void mousePressEvent(QMouseEvent *event); //Actions on components
+    void mousePressEvent(QMouseEvent *event);
     void pick_up_component(QGraphicsItem *component);
-    void mouseMoveEvent(QMouseEvent *event); //Moving components
+    void mouseMoveEvent(QMouseEvent *event);
 
     void restore_component_to_latest_position();
     void place_component(QPointF new_position);
@@ -51,9 +42,9 @@ private:
     bool check_if_there_is_new_block_to_place();
     void remove_component_from_map();
 
-    //void handle_buttons_mouse_press_events(QGraphicsItem *clicked_button);
     bool assert_that_required_components_are_placed();
 
+    int gui_boundary_height = 210;
     Map *map;
 
     QPointF entrance_original_position;
@@ -70,10 +61,7 @@ private:
 
 private slots:
     void back_to_main_menu();
-    void save_map_to_XML();
+    void request_map_saving();
     void start_game();
-
-
-
 };
 #endif // MAPCREATOR_H

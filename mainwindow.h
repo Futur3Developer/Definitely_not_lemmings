@@ -2,7 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMessageBox>
+
 #include "game.h"
+#include "qboxlayout.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,8 +23,12 @@ private slots:
     void start_game();
     void quit_program();
     void create_map();
+    void load_map();
 
 private:
     Ui::MainWindow *ui;
+
+    void close_menu();
+    QSharedPointer<QFile> assert_that_level_can_be_loaded();
 };
 #endif // MAINWINDOW_H
