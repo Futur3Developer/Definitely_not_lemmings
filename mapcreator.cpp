@@ -1,19 +1,39 @@
 #include "mapcreator.h"
+#include "mapconversionmanager.h"
+#include "mainwindow.h"
 
 MapCreator::MapCreator()
 {
+    map = new Map();
+
     set_view_configuration();
     initialize_map_components();
     add_map_creation_guidelines();
     add_buttons();
+}
 
-    this->show();
+MapCreator::MapCreator(Map *map)
+{
+    this -> map = map;
+
+    set_view_configuration();
+    initialize_map_components();
+    add_map_creation_guidelines();
+    add_buttons();
+}
+
+Map *MapCreator::get_map()
+{
+    return map;
+}
+
+void MapCreator::set_map(Map *map)
+{
+    this -> map = map;
 }
 
 void MapCreator::set_view_configuration()
 {
-    map = new Map();
-
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFixedSize(map -> get_width(), map -> get_height());
@@ -22,49 +42,18 @@ void MapCreator::set_view_configuration()
 
 void MapCreator::initialize_map_components()
 {
-    add_gui_panel_boundary();
-
     block_original_position.setX(map -> get_width()/2 - 40);
     block_original_position.setY(map -> get_height() - 120);
 
-    add_block();
-    add_entrance();
-    add_exit();
-}
+    entrance_original_position.setX(block_original_position.x() - 300);
+    entrance_original_position.setY(block_original_position.y() - 20);
 
-void MapCreator::add_gui_panel_boundary()
-{
-    QGraphicsLineItem *boundary = new QGraphicsLineItem(0, map -> get_height() - 210, map -> get_width(), map -> get_height() - 210);
-    map -> addItem(boundary);
-}
+    exit_original_position.setX(block_original_position.x() + 300);
+    exit_original_position.setY(block_original_position.y() - 20);
 
-void MapCreator::add_block()
-{
-    Block *block = new Block();
-    block -> setPos(block_original_position);
-
-
-    map -> addItem(block);
-}
-
-void MapCreator::add_entrance()
-{
-    Entrance *entrance = new Entrance();
-
-    entrance -> setPos(block_original_position.x() - 300, block_original_position.y() - 20);
-    entrance_original_position = entrance -> pos();
-
-    map -> addItem(entrance);
-}
-
-void MapCreator::add_exit()
-{
-    Exit *exit = new Exit();
-
-    exit -> setPos(block_original_position.x() + 300, block_original_position.y() - 20);
-    exit_original_position = exit -> pos();
-
-    map -> addItem(exit);
+    map -> add_block(block_original_position.x(), block_original_position.y());
+    map -> add_entrance(entrance_original_position.x(), entrance_original_position.y());
+    map -> add_exit(exit_original_position.x(), exit_original_position.y());
 }
 
 void MapCreator::add_guideline(QString text, int x_pos, int y_pos)
@@ -100,7 +89,7 @@ void MapCreator::add_buttons()
 {
     QPushButton *back_button = new QPushButton();
     add_button(back_button, 50, "Back");
-    //connect...
+    connect(back_button, &QPushButton::clicked, this, &MapCreator::back_to_main_menu);
 
     QPushButton *play_button = new QPushButton();
     add_button(play_button, map -> get_width() - 150, "Play");
@@ -108,7 +97,7 @@ void MapCreator::add_buttons()
 
     QPushButton *save_map_button = new QPushButton();
     add_button(save_map_button, map -> get_width() - 270, "Save map");
-    connect(save_map_button, &QPushButton::clicked, this, &MapCreator::save_map_to_XML);
+    connect(save_map_button, &QPushButton::clicked, this, &MapCreator::request_map_saving);
 }
 
 void MapCreator::mousePressEvent(QMouseEvent *event)
@@ -179,7 +168,7 @@ void MapCreator::place_component(QPointF new_position)
     bool there_is_new_block_to_place = check_if_there_is_new_block_to_place();
 
     if(!(there_is_new_block_to_place))
-        add_block();
+        this -> map ->add_block(map -> get_width()/2 - 40, map -> get_height() - 120);
 
 }
 
@@ -187,11 +176,11 @@ bool MapCreator::assert_that_position_is_valid(QPointF new_position)
 {
     if(component_to_place -> type() == Block::Type)
     {
-        if(new_position.y() < map -> get_height() - 290 && new_position.x() < map -> get_width() - 80)
+        if(new_position.y() < map -> get_height() - gui_boundary_height - 80 && new_position.x() < map -> get_width() - 80)
             return true;
         return false;
     }
-    else if (new_position.y() < map -> get_height() - 330 && new_position.x() < map -> get_width() - 90)
+    else if (new_position.y() < map -> get_height() - gui_boundary_height - 120 && new_position.x() < map -> get_width() - 90)
         return true;
     return false;
 }
@@ -242,10 +231,18 @@ bool MapCreator::assert_that_required_components_are_placed()
 
 void MapCreator::back_to_main_menu()
 {
+    bool map_creator_is_closed = this -> close();
+    if(!(map_creator_is_closed))
+    {
+        QMessageBox::critical(this, NULL, "Map creator could not be closed.");
+        return;
+    }
 
+    MainWindow *menu = new MainWindow;
+    menu -> show();
 }
 
-void MapCreator::save_map_to_XML()
+void MapCreator::request_map_saving()
 {
     bool required_components_are_placed = assert_that_required_components_are_placed();
 
@@ -255,10 +252,10 @@ void MapCreator::save_map_to_XML()
         return;
     }
 
-    map -> save_map_to_XML();
+    MapConversionManager::Get().process_map_saving_request(this);
 }
 
 void MapCreator::start_game()
 {
-
+    this -> close();
 }

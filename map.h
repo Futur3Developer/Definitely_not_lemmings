@@ -2,14 +2,6 @@
 #define MAP_H
 
 #include <QGraphicsScene>
-#include <QGraphicsRectItem>
-#include <QFile>
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
-#include <QApplication>
-#include <QFileInfo>
-#include <QMessageBox>
-#include <QDir>
 
 #include "block.h"
 #include "entrance.h"
@@ -22,14 +14,18 @@ public:
 
     int get_width() const;
     int get_height() const;
+    int get_gui_boundary_height() const;
 
-    void save_map_to_XML();
-    void load_map_from_XML();
+    void add_block(int x_pos, int y_pos);
+    void add_entrance(int x_pos, int y_pos);
+    void add_exit(int x_pos, int y_pos);
 
 private:
+    void add_gui_panel_boundary();
+
     int map_width = 1760;
     int map_height = 960;
-
+    int gui_boundary_height = 210;
 };
 
 #endif // MAP_H

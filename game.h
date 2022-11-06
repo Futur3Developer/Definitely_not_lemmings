@@ -7,7 +7,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 
-//Sigleton game class for global access
+//Singleton game class for global access
 class Game: public QGraphicsView{
     Q_OBJECT
 public:
