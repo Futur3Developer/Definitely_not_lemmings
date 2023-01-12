@@ -9,29 +9,50 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    block.cpp \
-    entrance.cpp \
-    exit.cpp \
+    Lemmings/basherlemming.cpp \
+    Lemmings/blockerlemming.cpp \
+    Lemmings/bridgebuilderlemming.cpp \
+    Lemmings/climberlemming.cpp \
+    Lemmings/diggerlemming.cpp \
+    Lemmings/joblesslemming.cpp \
+    Lemmings/lemming.cpp \
+    Lemmings/paratrooperlemming.cpp \
+    Lemmings/rampbuilderlemming.cpp \
+    MapFiles/MapComponents/block.cpp \
+    MapFiles/MapComponents/entrance.cpp \
+    MapFiles/MapComponents/exit.cpp \
+    MapFiles/MapConversion/mapconversionmanager.cpp \
+    MapFiles/MapConversion/mapconverter.cpp \
+    MapFiles/MapConversion/mapxmlconverter.cpp \
+    MapFiles/map.cpp \
+    MapFiles/mapcreator.cpp \
     game.cpp \
     main.cpp  \
     mainwindow.cpp \
-    map.cpp \
-    mapconversionmanager.cpp \
-    mapconverter.cpp \
-    mapcreator.cpp \
-    mapxmlconverter.cpp
+    score.cpp
 
 HEADERS += \
-    block.h \
-    entrance.h \
-    exit.h \
+    Lemmings/basherlemming.h \
+    Lemmings/blockerlemming.h \
+    Lemmings/bridgebuilderlemming.h \
+    Lemmings/climberlemming.h \
+    Lemmings/diggerlemming.h \
+    Lemmings/joblesslemming.h \
+    Lemmings/lemming.h \
+    Lemmings/paratrooperlemming.h \
+    Lemmings/rampbuilderlemming.h \
+    MapFiles/MapComponents/block.h \
+    MapFiles/MapComponents/entrance.h \
+    MapFiles/MapComponents/exit.h \
+    MapFiles/MapConversion/mapconversionmanager.h \
+    MapFiles/MapConversion/mapconverter.h \
+    MapFiles/MapConversion/mapxmlconverter.h \
+    MapFiles/map.h \
+    MapFiles/mapcreator.h \
     game.h \
     mainwindow.h \
-    map.h \
-    mapconversionmanager.h \
-    mapconverter.h \
-    mapcreator.h \
-    mapxmlconverter.h
+    score.h
+
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -40,3 +61,21 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 FORMS += \
     mainwindow.ui
+
+RESOURCES += \
+    graphics.qrc
+
+DISTFILES += \
+    Levels/level_1.xml \
+    Levels/level_2.xml \
+    Levels/level_3.xml \
+    UserMaps/user_map_0.xml \
+    UserMaps/user_map_1.xml \
+    UserMaps/user_map_2.xml \
+    UserMaps/user_map_3.xml \
+    graphics/BlockerLemming.png \
+    graphics/ClimberLemming.png \
+    graphics/ParatropperLemming_parachute_closed.png \
+    graphics/ParatropperLemming_parachute_open.png \
+    graphics/cursor.png \
+    graphics/lemming_right.png

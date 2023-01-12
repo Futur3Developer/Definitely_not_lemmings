@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>graphics/cursor.png</file>
+        <file>graphics/lemming_right.png</file>
+        <file>graphics/ClimberLemming.png</file>
+        <file>graphics/BlockerLemming.png</file>
+        <file>graphics/ParatrooperLemming_parachute_closed.png</file>
+        <file>graphics/ParatrooperLemming_parachute_open.png</file>
+        <file>graphics/BasherLemming.png</file>
+        <file>graphics/DiggerLemmingDigging.png</file>
+        <file>graphics/DiggerLemmingPassive.png</file>
+        <file>graphics/RampBuilderLemming.png</file>
+        <file>graphics/BridgeBuilderLemming.png</file>
+    </qresource>
+</RCC>

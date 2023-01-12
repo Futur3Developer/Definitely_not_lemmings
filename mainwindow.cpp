@@ -1,11 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "mapcreator.h"
-#include "mapconversionmanager.h"
-#include "mapconverter.h"
-#include "mapxmlconverter.h"
-
-#include <QDebug>
+#include "MapFiles/mapcreator.h"
+#include "MapFiles/MapConversion/mapconversionmanager.h"
+#include "MapFiles/MapConversion/mapconverter.h"
+#include "MapFiles/MapConversion/mapxmlconverter.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -42,12 +40,11 @@ void MainWindow::start_game()
         return;
 
     MapConverter *map_converter = new MapXMLconverter;
-    Map* map = map_converter -> load_map_from_file(map_file); //Game will be using map
-    delete map;
+    Map* map = map_converter -> load_map_from_file(map_file);
 
-    //Game::Get();
+    Game::Get().initialize_game(map);
 
-    //close_menu();
+    close_menu();
 }
 
 
