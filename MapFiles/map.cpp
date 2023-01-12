@@ -1,4 +1,6 @@
 #include "map.h"
+#include "MapFiles/MapComponents/entrance.h"
+#include "MapFiles/MapComponents/exit.h"
 
 Map::Map()
 {
@@ -32,7 +34,6 @@ void Map::add_block(int x_pos, int y_pos)
 {
     Block *block = new Block();
     block -> setPos(x_pos, y_pos);
-
     addItem(block);
 }
 
@@ -51,4 +52,3 @@ void Map::add_exit(int x_pos, int y_pos)
 
     addItem(exit);
 }
-

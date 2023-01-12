@@ -1,8 +1,9 @@
-#ifndef ENTRANCE_H
+﻿#ifndef ENTRANCE_H
 #define ENTRANCE_H
 
 #include <QGraphicsItem>
 #include <QBrush>
+#include <QKeyEvent>
 
 //Entrance - part of the map, point of lemmings spawn
 class Entrance: public QGraphicsRectItem
@@ -13,13 +14,11 @@ public:
     enum { Type = UserType + 2 };
 
     int type() const override { return Type; }
-
-    //TODO: Method for lemmings spawnning
-
-    //void spawn_lemmings_on_keyPressEvent(QKeyEvent *event);
+    void spawn_lemming(bool delay_should_be_applied);
+    void delay_spawn(int delay_time_in_milliseconds);
 
 private:
-    bool active = false; // For checking if it can spawn lemmings - if it's map creation, it can't
+
 };
 
 #endif // ENTRANCE_H

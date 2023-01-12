@@ -1,13 +1,15 @@
 #include "mapcreator.h"
-#include "mapconversionmanager.h"
+#include "MapConversion/mapconversionmanager.h"
 #include "mainwindow.h"
+#include <QDebug>
+//TODO: Add optional grid that can be used to make map easier
 
 MapCreator::MapCreator()
 {
     map = new Map();
 
     set_view_configuration();
-    initialize_map_components();
+    initialize_map_components(false);
     add_map_creation_guidelines();
     add_buttons();
 }
@@ -17,7 +19,7 @@ MapCreator::MapCreator(Map *map)
     this -> map = map;
 
     set_view_configuration();
-    initialize_map_components();
+    initialize_map_components(true);
     add_map_creation_guidelines();
     add_buttons();
 }
@@ -40,7 +42,7 @@ void MapCreator::set_view_configuration()
     setScene(map);
 }
 
-void MapCreator::initialize_map_components()
+void MapCreator::initialize_map_components(bool map_is_being_edited)
 {
     block_original_position.setX(map -> get_width()/2 - 40);
     block_original_position.setY(map -> get_height() - 120);
@@ -52,6 +54,10 @@ void MapCreator::initialize_map_components()
     exit_original_position.setY(block_original_position.y() - 20);
 
     map -> add_block(block_original_position.x(), block_original_position.y());
+
+    if(map_is_being_edited)
+        return;
+
     map -> add_entrance(entrance_original_position.x(), entrance_original_position.y());
     map -> add_exit(exit_original_position.x(), exit_original_position.y());
 }
@@ -82,6 +88,7 @@ void MapCreator::add_button(QPushButton *button, int aleft, const QString &text)
 {
     button -> setGeometry(QRect(aleft, entrance_original_position.y() + 30, 100, 50));
     button -> setText(text);
+
     map -> addWidget(button);
 }
 
@@ -93,7 +100,7 @@ void MapCreator::add_buttons()
 
     QPushButton *play_button = new QPushButton();
     add_button(play_button, map -> get_width() - 150, "Play");
-    //connect...
+    connect(play_button, &QPushButton::clicked, this, &MapCreator::start_game);
 
     QPushButton *save_map_button = new QPushButton();
     add_button(save_map_button, map -> get_width() - 270, "Save map");
@@ -257,5 +264,33 @@ void MapCreator::request_map_saving()
 
 void MapCreator::start_game()
 {
+    Map *map_without_gui = prepare_map_without_gui();
+    Game::Get().initialize_game(map_without_gui);
     this -> close();
+
+}
+
+Map *MapCreator::prepare_map_without_gui()
+{
+    QList<QGraphicsItem*> components_list = map -> items(0, 0, map -> get_width(), map -> get_height() - 210, Qt::ContainsItemShape, Qt::DescendingOrder, QTransform());
+    Map *map_without_gui = new Map;
+
+    Q_FOREACH(const QGraphicsItem* component, components_list)
+    {
+        if(component -> type() == Block::Type)
+        {
+            map_without_gui -> add_block(component -> x(), component -> y());
+
+        }
+        else if(component -> type() == Exit::Type)
+        {
+            map_without_gui -> add_exit(component -> x(), component -> y());
+        }
+        else
+        {
+            map_without_gui -> add_entrance(component -> x(), component -> y());
+        }
+    }
+
+    return map_without_gui;
 }

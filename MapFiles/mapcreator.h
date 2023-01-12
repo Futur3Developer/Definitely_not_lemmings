@@ -5,13 +5,13 @@
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QMouseEvent>
-
+#include <QGraphicsProxyWidget>
 #include <QPushButton>
 #include <QMessageBox>
 
-#include "block.h"
-#include "exit.h"
-#include "entrance.h"
+#include "MapFiles/MapComponents/block.h"
+#include "MapComponents/exit.h"
+#include "MapComponents/entrance.h"
 #include "map.h"
 
 class MapCreator: public QGraphicsView
@@ -26,7 +26,7 @@ public:
 
 private:
     void set_view_configuration();
-    void initialize_map_components();
+    void initialize_map_components(bool map_is_being_edited);
     void add_guideline(QString text, int x_pos, int y_pos);
     void add_map_creation_guidelines();
     void add_button(QPushButton *button, int aleft, const QString &text);
@@ -41,6 +41,7 @@ private:
     bool assert_that_position_is_valid(QPointF new_position);
     bool check_if_there_is_new_block_to_place();
     void remove_component_from_map();
+    Map *prepare_map_without_gui();
 
     bool assert_that_required_components_are_placed();
 

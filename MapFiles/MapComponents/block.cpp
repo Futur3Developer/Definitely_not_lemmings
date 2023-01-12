@@ -8,7 +8,5 @@ Block::Block()
     brush1.setStyle(Qt::SolidPattern);
     brush1.setColor(Qt::lightGray);
     setBrush(brush1);
-
-    //this->setAcceptHoverEvents(true);
 }
 

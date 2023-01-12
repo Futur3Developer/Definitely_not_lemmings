@@ -6,8 +6,8 @@
 #include <QDir>
 #include <QFileDialog>
 
-#include "map.h"
-#include "mapcreator.h"
+#include "MapFiles/map.h"
+#include "MapFiles/mapcreator.h"
 
 class MapConversionManager
 {

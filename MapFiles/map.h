@@ -3,9 +3,8 @@
 
 #include <QGraphicsScene>
 
-#include "block.h"
-#include "entrance.h"
-#include "exit.h"
+#include "Lemmings/lemming.h"
+#include "MapFiles/MapComponents/block.h"
 
 class Map : public QGraphicsScene
 {
@@ -19,6 +18,7 @@ public:
     void add_block(int x_pos, int y_pos);
     void add_entrance(int x_pos, int y_pos);
     void add_exit(int x_pos, int y_pos);
+    void add_item(QGraphicsItem *item, int x_pos, int y_pos);
 
 private:
     void add_gui_panel_boundary();

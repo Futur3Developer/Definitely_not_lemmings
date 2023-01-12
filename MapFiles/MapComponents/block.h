@@ -5,13 +5,11 @@
 #include <QBrush>
 
 //Block - building block of a map
-class Block: public QGraphicsRectItem
+class Block: public QGraphicsRectItem, QObject
 {
 public:
     Block();
-
     enum { Type = UserType + 1 };
-
     int type() const override { return Type; }
 };
 
