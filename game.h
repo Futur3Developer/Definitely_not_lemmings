@@ -7,6 +7,8 @@
 #include "MapFiles/map.h"
 #include "score.h"
 
+#include <QPushButton>
+#include <QMessageBox>
 #include <QTimer>
 #include <QGraphicsView>
 #include <QKeyEvent>
@@ -44,6 +46,7 @@ private:
     void start_game();
     void update_step_interval();
     void change_game_speed(QKeyEvent *event);
+    void add_button(QPushButton *button, int aleft, const QString &text);
 
     QList<Lemming*> lemmings_alive;
     Map *map;
@@ -51,9 +54,10 @@ private:
     QTimer *timer;
     Score *score;
     Lemming* focused_lemming = NULL;
+    QPushButton *back_button;
 
-    int lemmings_to_spawn;
-    int lemmings_to_save;
+    int lemmings_to_spawn = 10;
+    int lemmings_to_save = 2;
     int game_speed = 1;
     bool lemmings_spawning_started = false;
     bool lemmings_were_spawned = false;
@@ -61,8 +65,7 @@ private:
 
 private slots:
     void step();
-
-
+    void back_to_main_menu();
 };
 
 

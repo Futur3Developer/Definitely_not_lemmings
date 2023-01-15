@@ -1,6 +1,7 @@
 #include "game.h"
 #include "MapFiles/MapComponents/block.h"
 #include "MapFiles/MapComponents/exit.h"
+#include "mainwindow.h"
 
 #include <QGraphicsItem>
 #include <QDebug>
@@ -9,20 +10,34 @@ Game::Game():QGraphicsView()
 {
     //TODO: GUI at the bottom of the map providing ability to change classes of lemmings
     //TODO: Value of lemmings_to_spawn and lemmings_to_save should be set by user.
-
-    lemmings_to_spawn = 5;
-    lemmings_to_save = 2;
 }
 
 void Game::initialize_game(Map *map)
 {
+    lemmings_spawning_started = false;
+    lemmings_were_spawned = false;
+
     this -> map = map;
     set_view_configuration();
+
     score = new Score;
     int score_text_width = score -> boundingRect().width();
     score -> setPos(this -> map -> get_width() - score_text_width - 10, 0 + 10);
     map -> addItem(score);
+
+    back_button = new QPushButton;
+    add_button(back_button, 50, "Back");
+    connect(back_button, &QPushButton::clicked, this, &Game::back_to_main_menu);
+
     this -> show();
+}
+
+void Game::add_button(QPushButton *button, int aleft, const QString &text)
+{
+    button -> setGeometry(QRect(aleft, map -> get_height() - 110, 100, 50));
+    button -> setText(text);
+
+    map -> addWidget(button);
 }
 
 void Game::set_view_configuration()
@@ -93,7 +108,8 @@ void Game::start_game()
     connect(timer, SIGNAL(timeout()), this, SLOT(step()));
     timer -> start(default_step_interval);
 
-    entrance -> spawn_lemming(false); //Only the first lemming should spawn without delay
+    //Only the first lemming should spawn without delay
+    entrance -> spawn_lemming(false);
     for(int i = 1; i < lemmings_to_spawn; i++)
         entrance -> spawn_lemming(true);
     lemmings_were_spawned = true;
@@ -154,4 +170,23 @@ void Game::step()
 
         lemmings_alive[i] -> move();
     }
+}
+
+void Game::back_to_main_menu()
+{
+    lemmings_alive.clear();
+    //TODO: Check for memory leaks, assert that map can be deleted
+    //delete map;
+    delete timer;
+    delete focused_lemming;
+
+    bool game_is_closed = this -> close();
+    if(!(game_is_closed))
+    {
+        QMessageBox::critical(this, NULL, "Map creator could not be closed.");
+        return;
+    }
+
+    MainWindow *menu = new MainWindow;
+    menu -> show();
 }

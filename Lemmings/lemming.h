@@ -8,6 +8,7 @@ class Lemming : public QObject, public QGraphicsPixmapItem{
     Q_OBJECT
 public:
     Lemming();
+    virtual ~Lemming() = default;
     virtual void move();
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
