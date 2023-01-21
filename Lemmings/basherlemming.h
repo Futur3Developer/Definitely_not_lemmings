@@ -13,6 +13,8 @@ class BasherLemming: public Lemming{
 public:
     BasherLemming();
     void move() override;
+    enum { Type = UserType + 7 };
+    int type() const override { return Type; }
 
 private:
     void resolve_collision(QList<QGraphicsItem*> colliding_items);

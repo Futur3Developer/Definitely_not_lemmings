@@ -12,6 +12,8 @@ class ClimberLemming: public Lemming{
 public:
     ClimberLemming();
     void move() override;
+    enum { Type = UserType + 5 };
+    int type() const override { return Type; }
 
 private:
     void resolve_collision(QList<QGraphicsItem*> colliding_items);

@@ -11,8 +11,8 @@ public:
     virtual ~Lemming() = default;
     virtual void move();
 
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void keyPressEvent(QKeyEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void change_class(Lemming* lemming);
     void fire_lemming();
     bool check_for_lemming_out_of_scene();

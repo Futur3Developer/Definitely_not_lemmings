@@ -6,7 +6,7 @@ void MapConverter::save_map_to_file([[maybe_unused]] QSharedPointer<QFile> map_f
 
 Map *MapConverter::load_map_from_file([[maybe_unused]] QSharedPointer<QFile> map_file)
 {
-    Map* dummy_map = NULL;
+    Map* dummy_map = nullptr;
     return dummy_map;
 }
 

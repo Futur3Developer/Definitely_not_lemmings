@@ -110,7 +110,7 @@ Map *MapConversionManager::process_map_loading_request(QWidget *caller)
 
     if(!(map_file_path_is_valid))
     {
-        Map* dummy_map = NULL;
+        Map* dummy_map = nullptr;
         return dummy_map;
     }
 
@@ -118,7 +118,7 @@ Map *MapConversionManager::process_map_loading_request(QWidget *caller)
     MapConverter *map_converter = new MapXMLconverter;
     Map* map = map_converter -> load_map_from_file(map_file);
 
-    if(map == NULL)
+    if(map == nullptr)
     {
         QMessageBox::warning(this -> caller, NULL, "Selected file was not recognized as valid map file");
         return map;

@@ -10,6 +10,9 @@ public:
     ParatrooperLemming();
     void move() override;
 
+    enum { Type = UserType + 6 };
+    int type() const override { return Type; }
+
 private:
     void resolve_collision(QList<QGraphicsItem*> colliding_items);
     void resolve_collision_with_block(QGraphicsItem *block);
