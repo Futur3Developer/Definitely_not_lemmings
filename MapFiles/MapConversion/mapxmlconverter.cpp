@@ -58,7 +58,7 @@ void MapXMLconverter::save_map_to_file(QSharedPointer<QFile> map_file, Map* map)
     QString exit_position;
     QString blocks_positions;
 
-    Q_FOREACH(const QGraphicsItem* component, components_list)
+    foreach(const QGraphicsItem* component, components_list)
     {
         if(component -> type() == Block::Type)
         {
@@ -75,6 +75,11 @@ void MapXMLconverter::save_map_to_file(QSharedPointer<QFile> map_file, Map* map)
         }
     }
 
+//    foreach(int lemmings_class_changes_available, map -> available_lemmings_class_changes_list)
+//    {
+
+//    }
+
     blocks_positions.chop(1); //Removing last ";"
 
     QSharedPointer<QXmlStreamWriter> writerXML = QSharedPointer<QXmlStreamWriter>(new QXmlStreamWriter(map_file.data()));
@@ -85,7 +90,7 @@ Map *MapXMLconverter::load_map_from_file(QSharedPointer<QFile> map_file)
 {
     QSharedPointer<QXmlStreamReader> readerXML = QSharedPointer<QXmlStreamReader>(new QXmlStreamReader(map_file.data()));
 
-    Map* dummy_map = NULL;
+    Map* dummy_map = nullptr;
     QList<QString> map_components;
 
     map_components = load_data_from_XML(readerXML);

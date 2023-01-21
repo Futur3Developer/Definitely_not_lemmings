@@ -6,7 +6,7 @@ Block::Block()
 
     QBrush brush1;
     brush1.setStyle(Qt::SolidPattern);
-    brush1.setColor(Qt::lightGray);
+    brush1.setColor(Qt::darkGray);
     setBrush(brush1);
 }
 

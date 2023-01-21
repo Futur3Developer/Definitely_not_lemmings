@@ -13,6 +13,9 @@ public:
     BridgeBuilderLemming();
     void move() override;
 
+    enum { Type = UserType + 9 };
+    int type() const override { return Type; }
+
 private:
     void resolve_collision(QList<QGraphicsItem*> colliding_items);
     void resolve_collision_with_block(QGraphicsItem *block);

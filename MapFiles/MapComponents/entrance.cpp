@@ -32,7 +32,7 @@ void Entrance::spawn_lemming(bool delay_should_be_applied)
     Lemming *lemming = new JoblessLemming();
     lemming -> setPos(entrance_pos.x(), entrance_pos.y() + entrance_height/2 - 5);
     map -> addItem(lemming);
-    lemmings_alive->append(lemming);
+    lemmings_alive -> append(lemming);
 
 }
 

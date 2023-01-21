@@ -18,13 +18,12 @@ MainWindow::MainWindow(QWidget *parent)
     for (int i = 0; i < ui->levels_layout->count(); ++i)
     {
         QWidget *widget_in_layout = ui->levels_layout->itemAt(i)->widget();
-        if(widget_in_layout != NULL)
+        if(widget_in_layout != nullptr)
         {
             QPushButton *button_in_layout = dynamic_cast<QPushButton*>(widget_in_layout);
             connect(button_in_layout, &QPushButton::clicked, this, &MainWindow::start_game);
         }
     }
-
 }
 
 MainWindow::~MainWindow()
@@ -36,7 +35,7 @@ void MainWindow::start_game()
 {
     QSharedPointer<QFile> map_file = assert_that_level_can_be_loaded();
 
-    if(map_file == NULL)
+    if(map_file == nullptr)
         return;
 
     MapConverter *map_converter = new MapXMLconverter;
@@ -55,8 +54,8 @@ void MainWindow::quit_program()
 
 void MainWindow::create_map()
 {
-    MapCreator *map_creator_instance = new MapCreator;
-    map_creator_instance -> show();
+    MapCreator *map_creator = new MapCreator(nullptr);
+    map_creator -> show();
 
     close_menu();
 }
@@ -65,7 +64,7 @@ void MainWindow::load_map()
 {
     Map* map = MapConversionManager::Get().process_map_loading_request(this);
 
-    if(map == NULL)
+    if(map == nullptr)
         return;
 
     MapCreator *map_creator_instance = new MapCreator(map);
@@ -94,7 +93,7 @@ QSharedPointer<QFile> MainWindow::assert_that_level_can_be_loaded()
     {
         QString warning = "Levels directory " + levels_directory_path + " could not be accessed.";
         QMessageBox::critical(this, NULL, warning);
-        QSharedPointer<QFile> dummy_file = NULL;
+        QSharedPointer<QFile> dummy_file = nullptr;
         return dummy_file;
     }
 
@@ -107,7 +106,7 @@ QSharedPointer<QFile> MainWindow::assert_that_level_can_be_loaded()
         map_file -> close();
         QString warning = "Map file " + selected_levels_path + " could not be loaded";
         QMessageBox::warning(this, NULL, warning);
-        QSharedPointer<QFile> dummy_file = NULL;
+        QSharedPointer<QFile> dummy_file = nullptr;
         return dummy_file;
     }
 

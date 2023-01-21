@@ -1,23 +1,26 @@
 #include "mapcreator.h"
 #include "MapConversion/mapconversionmanager.h"
 #include "mainwindow.h"
+#include "Lemmings/blockerlemming.h"
+
+#include <QLabel>
+#include <QFormLayout>
+#include <QDialogButtonBox>
+#include <QLineEdit>
+#include <QIntValidator>
 #include <QDebug>
-//TODO: Add optional grid that can be used to make map easier
 
-MapCreator::MapCreator()
-{
-    map = new Map();
-
-    set_view_configuration();
-    initialize_map_components(false);
-    add_map_creation_guidelines();
-    add_buttons();
-}
+///TODO:: Add saving and loading map lemmings parameters
 
 MapCreator::MapCreator(Map *map)
 {
+    if(map == nullptr)
+        map = new Map();
+
+    this -> setAttribute(Qt::WA_DeleteOnClose);
     this -> map = map;
 
+    map -> add_gui_panel(map -> get_height() - map -> get_gui_panel_boundary_y_pos(), map -> get_gui_panel_boundary_y_pos());
     set_view_configuration();
     initialize_map_components(true);
     add_map_creation_guidelines();
@@ -27,11 +30,6 @@ MapCreator::MapCreator(Map *map)
 Map *MapCreator::get_map()
 {
     return map;
-}
-
-void MapCreator::set_map(Map *map)
-{
-    this -> map = map;
 }
 
 void MapCreator::set_view_configuration()
@@ -111,7 +109,7 @@ void MapCreator::mousePressEvent(QMouseEvent *event)
 {
     QGraphicsItem *clicked_item = itemAt(event ->pos());
 
-    if((event ->buttons() & Qt::LeftButton) && !(clicked_item == NULL) && component_is_being_placed == false)
+    if((event ->buttons() & Qt::LeftButton) && !(clicked_item == nullptr) && component_is_being_placed == false)
     {
         if(clicked_item -> type() == Block::Type || clicked_item -> type() == Entrance::Type || clicked_item -> type() == Exit::Type)
         {
@@ -175,7 +173,7 @@ void MapCreator::place_component(QPointF new_position)
     bool there_is_new_block_to_place = check_if_there_is_new_block_to_place();
 
     if(!(there_is_new_block_to_place))
-        this -> map ->add_block(map -> get_width()/2 - 40, map -> get_height() - 120);
+        this -> map ->add_block(block_original_position.x(), block_original_position.y());
 
 }
 
@@ -183,20 +181,18 @@ bool MapCreator::assert_that_position_is_valid(QPointF new_position)
 {
     if(component_to_place -> type() == Block::Type)
     {
-        if(new_position.y() < map -> get_height() - gui_boundary_height - 80 && new_position.x() < map -> get_width() - 80)
+        if(new_position.y() < map -> get_gui_panel_boundary_y_pos() - 80 && new_position.x() < map -> get_width() - 80)
             return true;
         return false;
     }
-    else if (new_position.y() < map -> get_height() - gui_boundary_height - 120 && new_position.x() < map -> get_width() - 90)
+    else if (new_position.y() < map -> get_gui_panel_boundary_y_pos() - 120 && new_position.x() < map -> get_width() - 90)
         return true;
     return false;
 }
 
 bool MapCreator::check_if_there_is_new_block_to_place()
 {
-    QGraphicsItem *item_at_block_position = map -> itemAt(block_original_position, QTransform());
-
-    if(item_at_block_position == NULL)
+    if(map -> itemAt(block_original_position, QTransform()) -> type() != Block::Type)
     {
         return false;
     }
@@ -207,6 +203,7 @@ bool MapCreator::check_if_there_is_new_block_to_place()
 void MapCreator::remove_component_from_map()
 {
     component_is_being_placed = false;
+    component_to_place -> setZValue(1);
 
     if(component_to_place -> type() == Entrance::Type)
         component_to_place -> setPos(entrance_original_position);
@@ -222,14 +219,12 @@ void MapCreator::remove_component_from_map()
         }
         else
             component_to_place -> setPos(block_original_position);
-
     }
-
 }
 
 bool MapCreator::assert_that_required_components_are_placed()
 {
-    if((map -> itemAt(entrance_original_position, QTransform()) != NULL) || (map -> itemAt(exit_original_position, QTransform()) != NULL))
+    if((map -> itemAt(entrance_original_position, QTransform())->type() == Entrance::Type) || (map -> itemAt(exit_original_position, QTransform())->type() == Exit::Type))
     {
         return false;
     }
@@ -264,18 +259,40 @@ void MapCreator::request_map_saving()
 
 void MapCreator::start_game()
 {
-    Map *map_without_gui = prepare_map_without_gui();
-    Game::Get().initialize_game(map_without_gui);
-    this -> close();
+    bool required_components_are_placed = assert_that_required_components_are_placed();
 
+    if(!(required_components_are_placed))
+    {
+        QMessageBox::warning(this, NULL, "Required map components, entrance and exit, are not placed.");
+        return;
+    }
+
+    Map *map_without_gui = prepare_map_without_gui();
+    if(map_without_gui == nullptr)
+    {
+        QMessageBox::warning(this, NULL, "Required values were not provided.");
+        return;
+    }
+    Game::Get().initialize_game(map_without_gui);
+
+    this -> close();
 }
 
 Map *MapCreator::prepare_map_without_gui()
 {
-    QList<QGraphicsItem*> components_list = map -> items(0, 0, map -> get_width(), map -> get_height() - 210, Qt::ContainsItemShape, Qt::DescendingOrder, QTransform());
+    //TODO: Check this function, propably just deleting items on GUI panel will be faster
     Map *map_without_gui = new Map;
+    fill_map_lemmings_parameters(map_without_gui);
 
-    Q_FOREACH(const QGraphicsItem* component, components_list)
+    if(map_without_gui -> available_lemmings_class_changes_list.empty())
+    {
+        map_without_gui = nullptr;
+        return map_without_gui;
+    }
+
+    QList<QGraphicsItem*> components_list = map -> items(0, 0, map -> get_width(), map -> get_gui_panel_boundary_y_pos(),
+                                                         Qt::ContainsItemShape, Qt::DescendingOrder, QTransform());
+    foreach(const QGraphicsItem* component, components_list)
     {
         if(component -> type() == Block::Type)
         {
@@ -293,4 +310,65 @@ Map *MapCreator::prepare_map_without_gui()
     }
 
     return map_without_gui;
+}
+
+void MapCreator::set_map_lemmings_parameters(QList<QLineEdit*> parameters_to_fill_line_edits, Map *map)
+{
+    for(int i = 0; i < parameters_to_fill_line_edits.size() - 2; i ++)
+    {
+        map -> available_lemmings_class_changes_list.append(parameters_to_fill_line_edits[i] -> text().toInt());
+    }
+
+    map -> lemmings_to_spawn = parameters_to_fill_line_edits[parameters_to_fill_line_edits.size() - 2] -> text().toInt();
+    map -> lemmings_to_save = parameters_to_fill_line_edits.last() -> text().toInt();
+}
+
+void MapCreator::prepare_dialog_buttons(QFormLayout *form, QDialog *dialog)
+{
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,Qt::Horizontal, dialog);
+    QObject::connect(buttonBox, SIGNAL(accepted()), dialog, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()), dialog, SLOT(reject()));
+
+    form -> addRow(buttonBox);
+}
+
+void MapCreator::add_dialog_line_edit_int_validated(QDialog *dialog, QList<QLineEdit*> *line_edits_list, QString label, QFormLayout *form, int validator_limit)
+{
+    QLineEdit *lineEdit = new QLineEdit(dialog);
+    lineEdit -> setValidator( new QIntValidator(0, validator_limit, this) );
+    form -> addRow(label, lineEdit);
+    line_edits_list->append(lineEdit);
+}
+
+void MapCreator::fill_map_lemmings_parameters(Map *map)
+{
+    QList<QLineEdit*> parameters_to_fill_line_edits;
+    QDialog dialog(this);
+    QFormLayout form(&dialog);
+
+    int lemmings_classes_implemented = 7;
+    int lemmings_survival_parameters = 2;
+    int parameters_to_fill = lemmings_classes_implemented + lemmings_survival_parameters;
+    QList<QString> parameters_labels = { "Blocker", "Climber", "Paratrooper", "Basher", "Digger", "Bridge builder", "Ramp builder",
+                                         "Lemmings to spawn", "Lemmings to save"};
+
+    int validator_limit = 100;
+    form.addRow(new QLabel("Available lemmings class changes:"));
+    for(int i = 0; i < parameters_to_fill; ++i)
+    {
+        if(i == lemmings_classes_implemented)
+        {
+            form.addRow(new QLabel("Lemmings survival rate:"));
+            validator_limit = 9;
+        }
+        add_dialog_line_edit_int_validated(&dialog, &parameters_to_fill_line_edits, parameters_labels[i], &form, validator_limit);
+    }
+
+    prepare_dialog_buttons(&form, &dialog);
+    dialog.layout()->setSizeConstraint( QLayout::SetFixedSize );
+
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        set_map_lemmings_parameters(parameters_to_fill_line_edits, map);
+    }
 }

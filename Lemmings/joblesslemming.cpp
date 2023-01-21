@@ -45,7 +45,7 @@ void JoblessLemming::resolve_collision(QList<QGraphicsItem*> colliding_items)
             resolve_collision_with_exit();
             return;
         }
-        else if(colliding_items[i] -> type() == Block::Type && colliding_items[i] -> scene() != NULL)
+        else if(colliding_items[i] -> type() == Block::Type && colliding_items[i] -> scene() != nullptr)
         {
             resolve_collision_with_block(colliding_items[i]);
         }
