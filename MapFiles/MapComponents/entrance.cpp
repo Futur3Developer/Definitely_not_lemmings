@@ -15,7 +15,6 @@ Entrance::Entrance()
     lgrad.setColorAt(1.0, Qt::blue);
 
     this->setBrush(lgrad);
-    //this->setAcceptHoverEvents(true);
 }
 
 

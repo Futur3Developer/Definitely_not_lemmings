@@ -9,9 +9,16 @@ BlockerLemming::BlockerLemming()
 
 void BlockerLemming::move()
 {
-    if(y_axis_speed == 0)
-        if(blocking_mode == 0)
+    if(blocking_mode == 1)
+        return;
+    else
+    {
+        if(y_axis_speed == 0)
+        {
             start_blocking();
+            return;
+        }
+    }
 
     QList<QGraphicsItem*> colliding_items = this -> collidingItems();
 

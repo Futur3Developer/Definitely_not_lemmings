@@ -14,15 +14,19 @@
 
 MapCreator::MapCreator(Map *map)
 {
+    bool map_is_being_edited = true;
     if(map == nullptr)
+    {
         map = new Map();
+        map_is_being_edited = false;
+    }
 
     this -> setAttribute(Qt::WA_DeleteOnClose);
     this -> map = map;
 
     map -> add_gui_panel(map -> get_height() - map -> get_gui_panel_boundary_y_pos(), map -> get_gui_panel_boundary_y_pos());
     set_view_configuration();
-    initialize_map_components(true);
+    initialize_map_components(map_is_being_edited);
     add_map_creation_guidelines();
     add_buttons();
 }
@@ -254,6 +258,14 @@ void MapCreator::request_map_saving()
         return;
     }
 
+    fill_map_lemmings_parameters(this -> map);
+
+    if(lemmings_configuration_is_set == false)
+    {
+        QMessageBox::warning(this, NULL, "Required values were not provided.");
+        return;
+    }
+
     MapConversionManager::Get().process_map_saving_request(this);
 }
 
@@ -284,7 +296,7 @@ Map *MapCreator::prepare_map_without_gui()
     Map *map_without_gui = new Map;
     fill_map_lemmings_parameters(map_without_gui);
 
-    if(map_without_gui -> available_lemmings_class_changes_list.empty())
+    if(lemmings_configuration_is_set == false)
     {
         map_without_gui = nullptr;
         return map_without_gui;
@@ -314,13 +326,14 @@ Map *MapCreator::prepare_map_without_gui()
 
 void MapCreator::set_map_lemmings_parameters(QList<QLineEdit*> parameters_to_fill_line_edits, Map *map)
 {
+    map -> available_lemmings_class_changes_list.clear();
     for(int i = 0; i < parameters_to_fill_line_edits.size() - 2; i ++)
-    {
         map -> available_lemmings_class_changes_list.append(parameters_to_fill_line_edits[i] -> text().toInt());
-    }
+
 
     map -> lemmings_to_spawn = parameters_to_fill_line_edits[parameters_to_fill_line_edits.size() - 2] -> text().toInt();
     map -> lemmings_to_save = parameters_to_fill_line_edits.last() -> text().toInt();
+    lemmings_configuration_is_set = true;
 }
 
 void MapCreator::prepare_dialog_buttons(QFormLayout *form, QDialog *dialog)
@@ -332,12 +345,34 @@ void MapCreator::prepare_dialog_buttons(QFormLayout *form, QDialog *dialog)
     form -> addRow(buttonBox);
 }
 
-void MapCreator::add_dialog_line_edit_int_validated(QDialog *dialog, QList<QLineEdit*> *line_edits_list, QString label, QFormLayout *form, int validator_limit)
+void MapCreator::add_dialog_line_edit_int_validated(QDialog *dialog, QList<QLineEdit*> *line_edits_list, QString label,
+                                                    QFormLayout *form, int validator_limit, int parameter_index)
 {
-    QLineEdit *lineEdit = new QLineEdit(dialog);
-    lineEdit -> setValidator( new QIntValidator(0, validator_limit, this) );
-    form -> addRow(label, lineEdit);
-    line_edits_list->append(lineEdit);
+    QLineEdit *line_edit = new QLineEdit(dialog);
+    line_edit -> setValidator( new QIntValidator(0, validator_limit, this) );
+    form -> addRow(label, line_edit);
+    line_edits_list->append(line_edit);
+
+    if(map -> available_lemmings_class_changes_list.isEmpty() == false)
+    {
+        if(parameter_index < 7)
+        {
+            const QString temp = QString::number(map -> available_lemmings_class_changes_list[parameter_index]);
+            line_edit -> setText(temp);
+        }
+        else if(parameter_index == 7)
+        {
+            const QString temp = QString::number(map -> lemmings_to_spawn);
+            line_edit -> setText(temp);
+        }
+        else if(parameter_index == 8)
+        {
+            const QString temp = QString::number(map -> lemmings_to_save);
+            line_edit -> setText(temp);
+        }
+
+        lemmings_configuration_is_set = true;
+    }
 }
 
 void MapCreator::fill_map_lemmings_parameters(Map *map)
@@ -361,14 +396,24 @@ void MapCreator::fill_map_lemmings_parameters(Map *map)
             form.addRow(new QLabel("Lemmings survival rate:"));
             validator_limit = 9;
         }
-        add_dialog_line_edit_int_validated(&dialog, &parameters_to_fill_line_edits, parameters_labels[i], &form, validator_limit);
+        add_dialog_line_edit_int_validated(&dialog, &parameters_to_fill_line_edits, parameters_labels[i], &form, validator_limit, i);
     }
 
     prepare_dialog_buttons(&form, &dialog);
-    dialog.layout()->setSizeConstraint( QLayout::SetFixedSize );
 
     if (dialog.exec() == QDialog::Accepted)
     {
+        foreach(QLineEdit* line_edit, parameters_to_fill_line_edits)
+            if(line_edit -> text().isEmpty())
+            {
+                lemmings_configuration_is_set = false;
+                return;
+            }
+
         set_map_lemmings_parameters(parameters_to_fill_line_edits, map);
+    }
+    else
+    {
+        lemmings_configuration_is_set = false;
     }
 }

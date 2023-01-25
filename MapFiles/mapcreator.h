@@ -55,7 +55,8 @@ private:
     bool assert_that_required_components_are_placed();
     //Methods for getting map lemmings parameters from user and setting them
     void fill_map_lemmings_parameters(Map *map);
-    void add_dialog_line_edit_int_validated(QDialog *dialog, QList<QLineEdit*> *line_edits_list, QString label, QFormLayout *form, int validator_limit);
+    void add_dialog_line_edit_int_validated(QDialog *dialog, QList<QLineEdit*> *line_edits_list, QString label, QFormLayout *form,
+                                            int validator_limit, int parameter_index);
     void set_map_lemmings_parameters(QList<QLineEdit *> parameters_to_fill_line_edits, Map *map);
 
     //Attributes for placing GUI and removing components to correct positions
@@ -72,6 +73,7 @@ private:
     QPushButton *back_button;
     QPushButton *save_map_button;
     QPushButton *play_button;
+    bool lemmings_configuration_is_set = false;
 
     void prepare_dialog_buttons(QFormLayout *form, QDialog *dialog);
 

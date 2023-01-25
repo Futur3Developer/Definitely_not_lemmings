@@ -6,10 +6,12 @@
 #include "Lemmings/lemming.h"
 #include "MapFiles/MapComponents/block.h"
 
+//Level would be propably better class name. Even better, make a new class Level with lemmings configuration and Map as one of attributes
 class Map : public QGraphicsScene
 {
 public:
     Map();
+    virtual ~Map() = default;
 
     //Methods for adding items in MapCreator
     void add_block(int x_pos, int y_pos);
@@ -31,7 +33,7 @@ public:
     int lemmings_to_save;
 
 private:
-    const int map_width = 1760;
+    const int map_width = 1920;
     const int map_height = 960;
     const int gui_panel_boundary_y_pos = 750;
 };

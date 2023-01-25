@@ -3,6 +3,8 @@
 #include "MapFiles/MapComponents/exit.h"
 #include "game.h"
 
+#include <QDebug>
+
 ParatrooperLemming::ParatrooperLemming()
 {
     setPixmap(QPixmap(":/graphics/ParatrooperLemming_parachute_closed"));
@@ -60,8 +62,10 @@ void ParatrooperLemming::open_parachute()
         setPixmap(QPixmap(":/graphics/ParatrooperLemming_parachute_open").transformed(QTransform().scale(-1, 1)));
     else
         setPixmap(QPixmap(":/graphics/ParatrooperLemming_parachute_open"));
+
     parachute_is_open = true;
     y_axis_speed = default_y_axis_speed/2;
+    fall_height_counter = 0;
 }
 
 void ParatrooperLemming::resolve_collision_with_block(QGraphicsItem *block)

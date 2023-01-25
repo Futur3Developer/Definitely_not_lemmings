@@ -6,6 +6,8 @@
 Map::Map()
 {
     this -> setSceneRect(0,0,map_width,map_height);
+    QPixmap background(":/graphics/map_background_2");
+    setBackgroundBrush(background.scaled(map_width, map_height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 }
 
 int Map::get_width() const
@@ -36,6 +38,7 @@ void Map::add_entrance(int x_pos, int y_pos)
     entrance -> setPos(x_pos, y_pos);
 
     addItem(entrance);
+    entrance -> setZValue(10);
 }
 
 void Map::add_exit(int x_pos, int y_pos)
@@ -58,6 +61,4 @@ void Map::add_gui_panel(int panel_height, int panel_y_pos)
 
     gui_panel -> setPos(0, panel_y_pos);
     this -> addItem(gui_panel);
-
-    qDebug()<<gui_panel -> zValue();
 }
