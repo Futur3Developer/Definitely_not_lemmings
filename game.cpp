@@ -7,9 +7,20 @@
 #include <QGraphicsItem>
 #include <QDebug>
 
-Game::Game():QGraphicsView()
+Game::Game():QGraphicsView(){}
+
+void Game::add_game_start_guideline()
 {
-    timer = new QTimer();
+    game_start_guideline = new QGraphicsTextItem();
+    game_start_guideline->setPlainText(QString("Press space to start"));
+    game_start_guideline->setDefaultTextColor(Qt::darkGreen);
+    game_start_guideline->setFont(QFont("times", 40));
+
+    int x = map -> get_width()/2 - game_start_guideline -> boundingRect().width()/2;
+    int y = map -> get_height()/2;
+
+    game_start_guideline->setPos(x, y);
+    map -> addItem(game_start_guideline);
 }
 
 void Game::initialize_game(Map *map)
@@ -27,10 +38,11 @@ void Game::initialize_game(Map *map)
 
     score = new Score();
     int score_text_width = score -> boundingRect().width();
-    score -> setPos(this -> map -> get_width() - score_text_width - 10, 0 + 10);
+    score -> setPos(this -> map -> get_width() - score_text_width - 10, 10);
     map -> addItem(score);
 
     add_GUI();
+    add_game_start_guideline();
 
     this -> show();
 }
@@ -94,18 +106,29 @@ void Game::keyPressEvent(QKeyEvent *event)
     QGraphicsView::keyPressEvent(event);
 }
 
+//TODO: Stop entrance from spawning lemmings if someone goes back
 void Game::start_game()
 {
-    lemmings_spawning_started = true;
-    locate_entrance_in_map();
+    map -> removeItem(game_start_guideline);
+    delete game_start_guideline;
 
+    timer = new QTimer();
     connect(timer, SIGNAL(timeout()), this, SLOT(step()));
     timer -> start(default_step_interval);
+
+    lemmings_spawning_started = true;
+    locate_entrance_in_map();
 
     //Only the first lemming should spawn without delay
     entrance -> spawn_lemming(false);
     for(int i = 1; i < lemmings_to_spawn; i++)
+    {
+        if(timer == nullptr)
+            return;
+
         entrance -> spawn_lemming(true);
+    }
+
     lemmings_were_spawned = true;
 
 }
@@ -173,6 +196,9 @@ void Game::add_GUI()
 
         QPushButton *button = new QPushButton();
         add_lemming_class_changing_button(button, i, button_geometry, icon_path);
+
+        if(map -> available_lemmings_class_changes_list[i] == 0)
+            button -> setDisabled(true);
 
         QStringList icon_path_splitted = lemmings_classes_icons_paths_list[i].split("/");
         QString icon_name = icon_path_splitted.value(icon_path_splitted.length() - 1);
@@ -289,10 +315,8 @@ void Game::step()
 {
     for(int i = 0; i < lemmings_alive.size(); i++)
     {
-        if(lemmings_alive[i] == nullptr)
-            continue;
-
-        lemmings_alive[i] -> move();
+        if(lemmings_alive[i] != nullptr)
+            lemmings_alive[i] -> move();
     }
 }
 
@@ -323,14 +347,19 @@ void Game::relay_change_class_request_to_focused_lemming(int simulated_key_value
 void Game::clear_current_game()
 {
     //TODO: Check for memory leaks, assert that map can be deleted
-    timer -> stop();
-    disconnect(timer, SIGNAL(timeout()), this, SLOT(step()));
-    delete timer;
+    if(timer != nullptr)
+    {
+        timer -> stop();
+        disconnect(timer, SIGNAL(timeout()), this, SLOT(step()));
+        delete timer;
+        timer = nullptr;
+    }
 
     foreach(QGraphicsProxyWidget *item, buttons_proxies)
     {
         map -> removeItem(item);
     }
+
     buttons_proxies.clear();
     class_changing_buttons.clear();
 
@@ -350,11 +379,14 @@ void Game::clear_current_game()
     QGraphicsItem *temp_item = qgraphicsitem_cast<QGraphicsItem*>(score);
     map -> removeItem(temp_item);
 
+    if(lemmings_alive.isEmpty() == false)
+        lemmings_alive.clear();
+
 //    Map *map_to_delete = this -> map;
 
 //    Map *new_map = new Map();
 //    this -> setScene(new_map);
 //    this -> map = new_map;
 
-    //map_to_delete -> deleteLater();
+//    delete map_to_delete;
 }

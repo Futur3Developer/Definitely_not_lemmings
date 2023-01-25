@@ -21,7 +21,7 @@
 Lemming::Lemming()
 {
     setPixmap(QPixmap(":/graphics/lemming_right"));
-    this -> setOpacity(0.5);
+    this -> setOpacity(0.8);
     this -> setFlag(ItemIsFocusable, true);
     this -> setZValue(-1);
 
@@ -35,7 +35,11 @@ void Lemming::move(){}
 
 void Lemming::keyPressEvent(QKeyEvent *event)
 {
+    //Catch only keys from 1 to 7 used to change lemming's classes
     int event_key = event -> key();
+    if(event_key < Qt::Key_1 || event_key > Qt::Key_7)
+        return;
+
     int current_available_class_changes_amount = Game::Get().get_map() -> available_lemmings_class_changes_list[event_key - Qt::Key_1];
 
     if(accept_class_change == false || current_available_class_changes_amount == 0)
@@ -97,8 +101,10 @@ void Lemming::change_class(Lemming *lemming)
     lemming -> setPos(this -> pos());
     lemming -> fall_height_counter = this -> fall_height_counter;
     lemming -> y_axis_speed = this -> y_axis_speed;
+
     if(lemming -> boundingRect() != this -> boundingRect())
         adjust_position_for_lemmings_height_difference(lemming);
+
     Game::Get().get_map()->addItem(lemming);
     Game::Get().update_list(this, lemming);
     lemming -> setOpacity(1);
@@ -117,7 +123,7 @@ void Lemming::fire_lemming()
 {
     Lemming *lemming = new JoblessLemming;
     change_class(lemming);
-    lemming -> setOpacity(0.5);
+    lemming -> setOpacity(0.8);
     lemming -> setFlag(ItemIsFocusable, true);
 }
 

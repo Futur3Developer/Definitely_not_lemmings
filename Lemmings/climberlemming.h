@@ -27,6 +27,9 @@ private:
     void stop_climbing();
     int climbing_mode = 0;
     int x_axis_versor_before_climbing_started = 1;
+    double calculate_height_difference_for_vertical_plane_movement(QGraphicsItem *block);
+    void update_axis_speeds_in_case_of_no_block_collision();
+    void update_axis_speeds_in_case_of_block_collision();
 };
 
 #endif // CLIMBERLEMMING_H

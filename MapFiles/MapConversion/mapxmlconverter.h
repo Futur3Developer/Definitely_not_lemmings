@@ -14,10 +14,12 @@ public:
     Map* load_map_from_file(QSharedPointer<QFile> map_file) override;
 
 private:
-    void save_map_to_XML(QSharedPointer<QXmlStreamWriter> writerXML, QString entrance_position, QString exit_position, QString blocks_positions);
+    void save_map_to_XML(QSharedPointer<QXmlStreamWriter> writerXML, QString entrance_position, QString exit_position,
+                         QString blocks_positions, QString lemmings_class_changes_available, QString lemmings_survival_rate);
 
-    QList<QString> load_data_from_XML( QSharedPointer<QXmlStreamReader> readerXML);
-    Map *prepare_map(QList<QString> map_components);
+    QStringList *load_data_from_XML( QSharedPointer<QXmlStreamReader> readerXML);
+    Map *prepare_map();
+    QStringList *map_components;
 };
 
 #endif // MAPXMLCONVERTER_H

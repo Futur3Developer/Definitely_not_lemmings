@@ -1,9 +1,13 @@
 #include "mapxmlconverter.h"
 #include <QDebug>
 
-MapXMLconverter::MapXMLconverter(){}
+MapXMLconverter::MapXMLconverter()
+{
+    map_components = new QStringList;
+}
 
-void MapXMLconverter::save_map_to_XML(QSharedPointer<QXmlStreamWriter> writerXML, QString entrance_position, QString exit_position, QString blocks_positions)
+void MapXMLconverter::save_map_to_XML(QSharedPointer<QXmlStreamWriter> writerXML, QString entrance_position, QString exit_position,
+                                      QString blocks_positions, QString lemmings_class_changes_available, QString lemmings_survival_rate)
 {
     writerXML->writeStartDocument();
     writerXML->setAutoFormatting(true);
@@ -12,13 +16,15 @@ void MapXMLconverter::save_map_to_XML(QSharedPointer<QXmlStreamWriter> writerXML
     writerXML->writeTextElement("entrance", entrance_position);
     writerXML->writeTextElement("exit", exit_position);
     writerXML->writeTextElement("blocks", blocks_positions);
+    writerXML->writeTextElement("lemmings_class_changes_available", lemmings_class_changes_available);
+    writerXML->writeTextElement("lemmings_survival_rate", lemmings_survival_rate);
     writerXML->writeEndElement();
     writerXML->writeEndDocument();
 }
 
-QList<QString> MapXMLconverter::load_data_from_XML( QSharedPointer<QXmlStreamReader> readerXML)
+QStringList *MapXMLconverter::load_data_from_XML( QSharedPointer<QXmlStreamReader> readerXML)
 {
-    QList<QString> map_components;
+    QStringList *dummy_map_components = nullptr;
 
     readerXML->readNextStartElement();
     while(readerXML->name() != "map_configuration" && readerXML->error() == 0)
@@ -29,34 +35,56 @@ QList<QString> MapXMLconverter::load_data_from_XML( QSharedPointer<QXmlStreamRea
     if(readerXML->name() == "map_configuration")
     {
         readerXML->readNextStartElement();
-        if(readerXML->name() == "entrance")
-        {
-            map_components.append(readerXML->readElementText());
-            readerXML->readNextStartElement();
-
-            if(readerXML->name() == "exit" )
-            {
-                map_components.append(readerXML->readElementText());
-                readerXML->readNextStartElement();
-
-                if(readerXML->name() == "blocks")
-                {
-                    map_components.append(readerXML->readElementText());
-                }
-            }
-        }
     }
+    else {return dummy_map_components;};
 
+    if(readerXML->name() == "entrance")
+    {
+        map_components->append(readerXML->readElementText());
+        readerXML->readNextStartElement();
+    }
+    else {return dummy_map_components;};
+
+    if(readerXML->name() == "exit")
+    {
+        map_components->append(readerXML->readElementText());
+        readerXML->readNextStartElement();
+    }
+    else {return dummy_map_components;};
+
+    if(readerXML->name() == "blocks")
+    {
+        map_components->append(readerXML->readElementText());
+        readerXML->readNextStartElement();
+    }
+    else {return dummy_map_components;};
+
+    if(readerXML->name() == "lemmings_class_changes_available")
+    {
+        map_components->append(readerXML->readElementText());
+        readerXML->readNextStartElement();
+    }
+    else {return dummy_map_components;};
+
+    if(readerXML->name() == "lemmings_survival_rate")
+    {
+        map_components->append(readerXML->readElementText());
+        readerXML->readNextStartElement();
+    }
+    else {return dummy_map_components;};
+    
     return map_components;
 }
 
 void MapXMLconverter::save_map_to_file(QSharedPointer<QFile> map_file, Map* map)
 {
-    QList<QGraphicsItem*> components_list = map -> items(0, 0, map -> get_width(), map -> get_height() - 230, Qt::ContainsItemShape, Qt::DescendingOrder, QTransform());
+    QList<QGraphicsItem*> components_list = map -> items(0, 0, map -> get_width(), map -> get_gui_panel_boundary_y_pos(), Qt::ContainsItemShape, Qt::DescendingOrder, QTransform());
 
     QString entrance_position;
     QString exit_position;
     QString blocks_positions;
+    QString lemmings_class_changes_available_to_text;
+    QString lemmings_survival_rate;
 
     foreach(const QGraphicsItem* component, components_list)
     {
@@ -75,15 +103,18 @@ void MapXMLconverter::save_map_to_file(QSharedPointer<QFile> map_file, Map* map)
         }
     }
 
-//    foreach(int lemmings_class_changes_available, map -> available_lemmings_class_changes_list)
-//    {
+    foreach(int lemmings_class_changes_available, map -> available_lemmings_class_changes_list)
+        lemmings_class_changes_available_to_text += QString::number(lemmings_class_changes_available) + ";";
 
-//    }
+    lemmings_survival_rate = QString::number(map ->lemmings_to_spawn) + ";" + QString::number(map ->lemmings_to_save);
 
-    blocks_positions.chop(1); //Removing last ";"
+    //Removing last ";"
+    blocks_positions.chop(1);
+    lemmings_class_changes_available_to_text.chop(1);
 
     QSharedPointer<QXmlStreamWriter> writerXML = QSharedPointer<QXmlStreamWriter>(new QXmlStreamWriter(map_file.data()));
-    save_map_to_XML(writerXML, entrance_position, exit_position, blocks_positions);
+    save_map_to_XML(writerXML, entrance_position, exit_position, blocks_positions, lemmings_class_changes_available_to_text,
+                    lemmings_survival_rate);
 }
 
 Map *MapXMLconverter::load_map_from_file(QSharedPointer<QFile> map_file)
@@ -91,36 +122,40 @@ Map *MapXMLconverter::load_map_from_file(QSharedPointer<QFile> map_file)
     QSharedPointer<QXmlStreamReader> readerXML = QSharedPointer<QXmlStreamReader>(new QXmlStreamReader(map_file.data()));
 
     Map* dummy_map = nullptr;
-    QList<QString> map_components;
 
-    map_components = load_data_from_XML(readerXML);
-
-    if(map_components.isEmpty())
+    if(load_data_from_XML(readerXML) == nullptr)
+    {
         return dummy_map;
-    else
-        if(map_components.length() < 3)
-            return dummy_map;
+    }
 
-    Map *map = prepare_map(map_components);
+    Map *map = prepare_map();
 
     return map;
 }
 
-Map *MapXMLconverter::prepare_map(QList<QString> map_components)
+Map *MapXMLconverter::prepare_map()
 {
     Map* map = new Map();
-    QStringList entrance_position_split = map_components[0].split(',');
-    QStringList exit_position_split = map_components[1].split(',');
-    QStringList blocks_positions_split = map_components[2].split(';');
+    QStringList entrance_position_split = map_components->at(0).split(',');
+    QStringList exit_position_split = map_components->at(1).split(',');
+    QStringList blocks_positions_split = map_components->at(2).split(';');
+    QStringList lemmings_class_changes_available = map_components->at(3).split(';');
+    QStringList lemmings_survival_rate = map_components->at(4).split(';');
 
     map -> add_entrance(entrance_position_split[0].toInt(), entrance_position_split[1].toInt());
     map -> add_exit(exit_position_split[0].toInt(), exit_position_split[1].toInt());
 
-    for(int i = 0; i < blocks_positions_split.length() - 1; i++)
+    for(int i = 0; i < blocks_positions_split.length(); i++)
     {
         QStringList temp = blocks_positions_split[i].split(',');
         map -> add_block(temp[0].toInt(), temp[1].toInt());
     }
+
+    for(int i =0; i < lemmings_class_changes_available.length(); i++)
+        map -> available_lemmings_class_changes_list.append(lemmings_class_changes_available.at(i).toInt());
+
+    map -> lemmings_to_spawn = lemmings_survival_rate.at(0).toInt();
+    map -> lemmings_to_save = lemmings_survival_rate.at(1).toInt();
 
     return map;
 }

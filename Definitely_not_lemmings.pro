@@ -77,5 +77,4 @@ DISTFILES += \
     graphics/ClimberLemming.png \
     graphics/ParatropperLemming_parachute_closed.png \
     graphics/ParatropperLemming_parachute_open.png \
-    graphics/cursor.png \
     graphics/lemming_right.png

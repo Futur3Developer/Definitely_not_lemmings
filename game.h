@@ -33,7 +33,6 @@ public:
     Map *get_map() const;
 
     Score *get_score_pointer() const;
-
     int get_lemmings_to_save() const;
     int get_lemmings_to_spawn() const;
 
@@ -61,6 +60,7 @@ private:
     void add_lemming_class_changing_button(QPushButton *button, int button_index, QRect button_geometry, QString icon_path);
     void add_game_speed_changing_button(QString icon_path, int button_x_pos, int button_index);
     void add_graphics_text_item_center_aligned_to_button(QGraphicsTextItem *text_item, QPushButton *button, int vertical_offset_from_button, QString text, QFont font);
+    void add_game_start_guideline();
 
     //Basic game attributes
     int lemmings_to_spawn;
@@ -74,11 +74,12 @@ private:
     QList<Lemming*> lemmings_alive;
     Map *map;
     Entrance *entrance;
-    QTimer *timer;
+    QTimer *timer = nullptr;
     Score *score;
     Lemming *focused_lemming = nullptr;
     QPushButton *back_button;
     QList<QPushButton*> game_speed_changing_buttons;
+    QGraphicsTextItem *game_start_guideline;
     int next_game_speed_button_x_pos = 10;
 
     //Method for clearing current game's data in case someone wants to play again

@@ -36,10 +36,21 @@ void MainWindow::start_game()
     QSharedPointer<QFile> map_file = assert_that_level_can_be_loaded();
 
     if(map_file == nullptr)
+    {
+        QMessageBox::warning(this, NULL, "Levels directory or particular map file could not be loaded."
+                                         "Try loading another level.");
         return;
+    }
 
     MapConverter *map_converter = new MapXMLconverter;
     Map* map = map_converter -> load_map_from_file(map_file);
+
+    if(map == nullptr)
+    {
+        QMessageBox::warning(this, NULL, "Selected level could not be loaded."
+                                         "Try loading another level.");
+        return;
+    }
 
     Game::Get().initialize_game(map);
 

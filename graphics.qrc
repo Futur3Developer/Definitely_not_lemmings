@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>graphics/cursor.png</file>
         <file>graphics/lemming_right.png</file>
         <file>graphics/ClimberLemming.png</file>
         <file>graphics/BlockerLemming.png</file>
@@ -11,13 +10,6 @@
         <file>graphics/DiggerLemmingPassive.png</file>
         <file>graphics/RampBuilderLemming.png</file>
         <file>graphics/BridgeBuilderLemming.png</file>
-        <file>../../../../Programowanie/grafiki/GrafikiPNG/Basher_icon.png</file>
-        <file>../../../../Programowanie/grafiki/GrafikiPNG/Blocker_icon.png</file>
-        <file>../../../../Programowanie/grafiki/GrafikiPNG/BridgeBuilder_icon.png</file>
-        <file>../../../../Programowanie/grafiki/GrafikiPNG/Climber_icon.png</file>
-        <file>../../../../Programowanie/grafiki/GrafikiPNG/Digger_icon.png</file>
-        <file>../../../../Programowanie/grafiki/GrafikiPNG/Paratrooper_icon.png</file>
-        <file>../../../../Programowanie/grafiki/GrafikiPNG/RampBuilder_icon.png</file>
         <file>graphics_icons/Basher_icon.png</file>
         <file>graphics_icons/Blocker_icon.png</file>
         <file>graphics_icons/BridgeBuilder_icon.png</file>
@@ -28,5 +20,7 @@
         <file>graphics_icons/game_speed_0_icon.png</file>
         <file>graphics_icons/game_speed_1_icon.png</file>
         <file>graphics_icons/game_speed_2_icon.png</file>
+        <file>graphics/map_background_1.jpg</file>
+        <file>graphics/map_background_2.jpg</file>
     </qresource>
 </RCC>

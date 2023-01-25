@@ -10,5 +10,4 @@ Exit::Exit()
     lgrad.setColorAt(1.0, Qt::green);
 
     this->setBrush(lgrad);
-    //this->setAcceptHoverEvents(true);
 }

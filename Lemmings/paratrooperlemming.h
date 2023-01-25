@@ -22,7 +22,6 @@ private:
     void open_parachute();
 
     bool parachute_is_open = false;
-    int fall_height_counter = 0;
     int lemmings_height_without_parachute;
 };
 

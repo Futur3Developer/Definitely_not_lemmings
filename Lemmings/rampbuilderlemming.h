@@ -28,6 +28,7 @@ private:
     bool building_started = false;
     int blocks_to_build = 3;
     double last_block_built_pos_x = 0;
+    int block_side_length = 80;
 };
 
 #endif // RAMPBUILDERLEMMING_H
