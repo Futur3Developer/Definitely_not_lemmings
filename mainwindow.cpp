@@ -14,8 +14,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->quit, &QPushButton::clicked, this, &MainWindow::quit_program);
     connect(ui->create_map, &QPushButton::clicked, this, &MainWindow::create_map);
     connect(ui->load_map, &QPushButton::clicked, this, &MainWindow::load_map);
+    connect(ui->informations, &QPushButton::clicked, this, &MainWindow::show_informations);
 
-    for (int i = 0; i < ui->levels_layout->count(); ++i)
+    for (int i = 0; i < ui->levels_layout->count(); i++)
     {
         QWidget *widget_in_layout = ui->levels_layout->itemAt(i)->widget();
         if(widget_in_layout != nullptr)
@@ -82,6 +83,28 @@ void MainWindow::load_map()
     map_creator_instance -> show();
 
     close_menu();
+}
+
+void MainWindow::show_informations()
+{
+    QMessageBox::information(this, "Game informations and settings",
+                             tr("Creating map:\n"
+                                "- drag and drop map components to create desired layout\n"
+                                "- use right mouse button while holding component to drop it back to its earlier position\n"
+                                "- use middle mouse button to remove component from map.\n"
+                                "- saving map or starting the game is only posibble when required components, entrance and exit, are placed.\n"
+                                "...personally I would advice to also use some blocks as well.\n"
+                                "- map saving or starting the game requires to fill lemmings configuration, how many class changes are permitted,\n"
+                                " how many lemmings should be spawned and how many of them need to be saved in order to win.\n"
+                                "\n"
+                                "Game:\n"
+                                "Main goal of the game is to rescue required amount of spawned lemmings by guiding them from entrance to exit.\n"
+                                "- both visible buttons and keyboard shortcuts can be used to play\n"
+                                "- to change class of lemming selected with left mouse button use keys 1 to 7 or corresponding buttons in lower game panel\n"
+                                "- to change game speed to get more time to think or accelerate lemmings when it is certain they will pass the exit\n"
+                                "use buttons in upper left corner or keys Q and E\n"
+                                "\n"
+                                "Good luck  :)"), QMessageBox::Ok);
 }
 
 void MainWindow::close_menu()
