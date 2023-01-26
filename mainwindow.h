@@ -19,16 +19,17 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
-    void start_game();
-    void quit_program();
-    void create_map();
-    void load_map();
-
 private:
     Ui::MainWindow *ui;
 
     void close_menu();
     QSharedPointer<QFile> assert_that_level_can_be_loaded();
+
+private slots:
+    void start_game();
+    void quit_program();
+    void create_map();
+    void load_map();
+    void show_informations();
 };
 #endif // MAINWINDOW_H
