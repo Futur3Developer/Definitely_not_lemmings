@@ -10,3 +10,8 @@ Block::Block()
     setBrush(brush1);
 }
 
+Block::~Block()
+{
+
+}
+

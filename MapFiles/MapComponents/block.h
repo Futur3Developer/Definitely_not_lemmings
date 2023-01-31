@@ -4,11 +4,15 @@
 #include <QGraphicsItem>
 #include <QBrush>
 
-//Block - building block of a map
+/**
+ * Basic component of Map instance. Used for designing game levels.
+ */
 class Block: public QGraphicsRectItem, QObject
 {
 public:
     Block();
+    ~Block();
+
     enum { Type = UserType + 1 };
     int type() const override { return Type; }
 };

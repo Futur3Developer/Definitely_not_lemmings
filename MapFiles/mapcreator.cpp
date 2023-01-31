@@ -2,15 +2,13 @@
 #include "MapConversion/mapconversionmanager.h"
 #include "mainwindow.h"
 #include "Lemmings/blockerlemming.h"
+#include "game.h"
 
 #include <QLabel>
 #include <QFormLayout>
 #include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QIntValidator>
-#include <QDebug>
-
-///TODO:: Add saving and loading map lemmings parameters
 
 MapCreator::MapCreator(Map *map)
 {
@@ -29,6 +27,11 @@ MapCreator::MapCreator(Map *map)
     initialize_map_components(map_is_being_edited);
     add_map_creation_guidelines();
     add_buttons();
+}
+
+MapCreator::~MapCreator()
+{
+    delete map;
 }
 
 Map *MapCreator::get_map()
@@ -171,14 +174,19 @@ void MapCreator::place_component(QPointF new_position)
     if(!(position_is_valid))
         return;
 
-    component_is_being_placed = false;
-    component_to_place -> setPos(new_position);
-
-    bool there_is_new_block_to_place = check_if_there_is_new_block_to_place();
-
-    if(!(there_is_new_block_to_place))
-        this -> map ->add_block(block_original_position.x(), block_original_position.y());
-
+    if(component_to_place -> type() == Block::Type)
+    {
+        component_to_place -> setPos(new_position);
+        Block *block = new Block();
+        map -> addItem(block);
+        block -> setPos(new_position);
+        component_to_place = block;
+    }
+    else
+    {
+        component_is_being_placed = false;
+        component_to_place -> setPos(new_position);
+    }
 }
 
 bool MapCreator::assert_that_position_is_valid(QPointF new_position)
@@ -237,15 +245,8 @@ bool MapCreator::assert_that_required_components_are_placed()
 
 void MapCreator::back_to_main_menu()
 {
-    bool map_creator_is_closed = this -> close();
-    if(!(map_creator_is_closed))
-    {
-        QMessageBox::critical(this, NULL, "Map creator could not be closed.");
-        return;
-    }
-
-    MainWindow *menu = new MainWindow;
-    menu -> show();
+    Game::Get().get_main_menu() -> show();
+    this -> close();
 }
 
 void MapCreator::request_map_saving()
@@ -292,7 +293,6 @@ void MapCreator::start_game()
 
 Map *MapCreator::prepare_map_without_gui()
 {
-    //TODO: Check this function, propably just deleting items on GUI panel will be faster
     Map *map_without_gui = new Map;
     fill_map_lemmings_parameters(map_without_gui);
 
@@ -326,9 +326,9 @@ Map *MapCreator::prepare_map_without_gui()
 
 void MapCreator::set_map_lemmings_parameters(QList<QLineEdit*> parameters_to_fill_line_edits, Map *map)
 {
-    map -> available_lemmings_class_changes_list.clear();
+    map -> available_lemmings_class_changes.clear();
     for(int i = 0; i < parameters_to_fill_line_edits.size() - 2; i ++)
-        map -> available_lemmings_class_changes_list.append(parameters_to_fill_line_edits[i] -> text().toInt());
+        map -> available_lemmings_class_changes.append(parameters_to_fill_line_edits[i] -> text().toInt());
 
 
     map -> lemmings_to_spawn = parameters_to_fill_line_edits[parameters_to_fill_line_edits.size() - 2] -> text().toInt();
@@ -353,11 +353,11 @@ void MapCreator::add_dialog_line_edit_int_validated(QDialog *dialog, QList<QLine
     form -> addRow(label, line_edit);
     line_edits_list->append(line_edit);
 
-    if(map -> available_lemmings_class_changes_list.isEmpty() == false)
+    if(map -> available_lemmings_class_changes.isEmpty() == false)
     {
         if(parameter_index < 7)
         {
-            const QString temp = QString::number(map -> available_lemmings_class_changes_list[parameter_index]);
+            const QString temp = QString::number(map -> available_lemmings_class_changes[parameter_index]);
             line_edit -> setText(temp);
         }
         else if(parameter_index == 7)

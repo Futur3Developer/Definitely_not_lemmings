@@ -20,7 +20,6 @@
         <file>graphics_icons/game_speed_0_icon.png</file>
         <file>graphics_icons/game_speed_1_icon.png</file>
         <file>graphics_icons/game_speed_2_icon.png</file>
-        <file>graphics/map_background_1.jpg</file>
-        <file>graphics/map_background_2.jpg</file>
+        <file>graphics/background.png</file>
     </qresource>
 </RCC>

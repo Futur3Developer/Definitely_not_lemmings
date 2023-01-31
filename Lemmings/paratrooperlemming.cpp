@@ -3,8 +3,6 @@
 #include "MapFiles/MapComponents/exit.h"
 #include "game.h"
 
-#include <QDebug>
-
 ParatrooperLemming::ParatrooperLemming()
 {
     setPixmap(QPixmap(":/graphics/ParatrooperLemming_parachute_closed"));

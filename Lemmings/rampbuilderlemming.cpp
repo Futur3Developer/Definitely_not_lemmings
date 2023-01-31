@@ -2,7 +2,6 @@
 #include "blockerlemming.h"
 #include "MapFiles/MapComponents/exit.h"
 #include "game.h"
-#include <QDebug>
 
 RampBuilderLemming::RampBuilderLemming()
 {

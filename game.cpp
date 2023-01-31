@@ -1,11 +1,7 @@
 #include "game.h"
-#include "MapFiles/MapComponents/block.h"
-#include "MapFiles/MapComponents/exit.h"
-#include "mainwindow.h"
 
 #include <QGraphicsProxyWidget>
 #include <QGraphicsItem>
-#include <QDebug>
 
 Game::Game():QGraphicsView(){}
 
@@ -29,7 +25,9 @@ void Game::initialize_game(Map *map)
     lemmings_spawning_started = false;
     lemmings_were_spawned = false;
 
+    Map *map_to_delete = this -> map;
     this -> map = map;
+
     map -> add_gui_panel(map -> get_height() - map -> get_gui_panel_boundary_y_pos(), map -> get_gui_panel_boundary_y_pos());
     lemmings_to_save = map -> lemmings_to_save;
     lemmings_to_spawn = map -> lemmings_to_spawn;
@@ -45,6 +43,9 @@ void Game::initialize_game(Map *map)
     add_game_start_guideline();
 
     this -> show();
+
+    if(map_to_delete != nullptr)
+        delete map_to_delete;
 }
 
 void Game::set_view_configuration()
@@ -55,7 +56,7 @@ void Game::set_view_configuration()
     setScene(map);
 }
 
-QList<Lemming*> *Game::get_lemmings_alive_pointer()
+QList<Lemming*> *Game::get_lemmings_alive()
 {
     return &lemmings_alive;
 }
@@ -63,6 +64,16 @@ QList<Lemming*> *Game::get_lemmings_alive_pointer()
 Map *Game::get_map() const
 {
     return map;
+}
+
+MainWindow *Game::get_main_menu() const
+{
+    return main_menu;
+}
+
+void Game::set_main_window(MainWindow &main_menu)
+{
+    this -> main_menu = &main_menu;
 }
 
 int Game::get_lemmings_to_save() const
@@ -75,7 +86,7 @@ Score *Game::get_score_pointer() const
     return score;
 }
 
-void Game::update_list(Lemming *lemming_to_delete, Lemming *lemming_to_update)
+void Game::update_lemmings_alive_list(Lemming *lemming_to_delete, Lemming *lemming_to_update)
 {
     int i = lemmings_alive.indexOf(lemming_to_delete);
     lemmings_alive[i] = lemming_to_update;
@@ -96,7 +107,10 @@ void Game::keyPressEvent(QKeyEvent *event)
     if(event->key() == Qt::Key_Space)
     {
         if(lemmings_spawning_started == false)
+        {
+            back_button -> setEnabled(false);
             start_game();
+        }
         else
             return;
     }
@@ -106,7 +120,6 @@ void Game::keyPressEvent(QKeyEvent *event)
     QGraphicsView::keyPressEvent(event);
 }
 
-//TODO: Stop entrance from spawning lemmings if someone goes back
 void Game::start_game()
 {
     map -> removeItem(game_start_guideline);
@@ -122,15 +135,14 @@ void Game::start_game()
     //Only the first lemming should spawn without delay
     entrance -> spawn_lemming(false);
     for(int i = 1; i < lemmings_to_spawn; i++)
-    {
-        if(timer == nullptr)
-            return;
-
         entrance -> spawn_lemming(true);
-    }
+
 
     lemmings_were_spawned = true;
+    for(int i = 0; i < game_speed_changing_buttons.length(); i++)
+        game_speed_changing_buttons[i]->setEnabled(true);
 
+    back_button -> setEnabled(true);
 }
 
 void Game::change_game_speed(QKeyEvent *event)
@@ -197,7 +209,7 @@ void Game::add_GUI()
         QPushButton *button = new QPushButton();
         add_lemming_class_changing_button(button, i, button_geometry, icon_path);
 
-        if(map -> available_lemmings_class_changes_list[i] == 0)
+        if(map -> available_lemmings_class_changes[i] == 0)
             button -> setDisabled(true);
 
         QStringList icon_path_splitted = lemmings_classes_icons_paths_list[i].split("/");
@@ -214,12 +226,12 @@ void Game::add_GUI()
         lemmings_classes_names.append(lemming_class_name_text_item);
 
         QGraphicsTextItem *available_class_changes_amount_text_item = new QGraphicsTextItem();
-        QString available_class_changes_amount_text = QString::number(map -> available_lemmings_class_changes_list[i]);
+        QString available_class_changes_amount_text = QString::number(map -> available_lemmings_class_changes[i]);
         vertical_offset_from_button = button -> height() + 5;
 
         add_graphics_text_item_center_aligned_to_button(available_class_changes_amount_text_item, button,
                                                         vertical_offset_from_button, available_class_changes_amount_text, font);
-        available_class_changes_amount_list.append(available_class_changes_amount_text_item);
+        available_lemmings_class_changes_as_text_items.append(available_class_changes_amount_text_item);
     }
 }
 
@@ -260,6 +272,7 @@ void Game::add_game_speed_changing_button(QString icon_path, int button_x_pos, i
     buttons_proxies.append(proxy);
 
     connect(game_speed_button, &QPushButton::clicked, this, [=]{update_step_interval(button_index); });
+    game_speed_button -> setEnabled(false);
 
     game_speed_changing_buttons.append(game_speed_button);
     next_game_speed_button_x_pos = next_game_speed_button_x_pos + game_speed_button -> width() + 10;
@@ -281,6 +294,23 @@ void Game::add_graphics_text_item_center_aligned_to_button(QGraphicsTextItem *te
 int Game::get_lemmings_to_spawn() const
 {
     return lemmings_to_spawn;
+}
+
+void Game::decrease_available_lemmings_class_changes(int class_index)
+{
+    int new_amount_of_class_changes_available = map -> available_lemmings_class_changes[class_index] - 1;
+    map -> available_lemmings_class_changes[class_index] = new_amount_of_class_changes_available;
+    available_lemmings_class_changes_as_text_items[class_index] -> setPlainText(QString::number(new_amount_of_class_changes_available));
+}
+
+int Game::get_available_lemmings_class_changes(int class_index) const
+{
+    return map -> available_lemmings_class_changes[class_index];
+}
+
+QPushButton *Game::get_class_changing_button(int button_index) const
+{
+    return class_changing_buttons[button_index];
 }
 
 void Game::update_step_interval(int new_game_speed)
@@ -323,16 +353,8 @@ void Game::step()
 void Game::back_to_main_menu()
 {
     clear_current_game();
-
-    bool game_is_closed = this -> close();
-    if(!(game_is_closed))
-    {
-        QMessageBox::critical(this, NULL, "Game could not be closed.");
-        return;
-    }
-
-    MainWindow *menu = new MainWindow;
-    menu -> show();
+    main_menu -> show();
+    this -> hide();
 }
 
 void Game::relay_change_class_request_to_focused_lemming(int simulated_key_value)
@@ -344,9 +366,33 @@ void Game::relay_change_class_request_to_focused_lemming(int simulated_key_value
     focused_lemming -> keyPressEvent(key_to_simulate);
 }
 
+void Game::clear_current_games_GUI()
+{
+    foreach(QGraphicsProxyWidget *item, buttons_proxies)
+        map -> removeItem(item);
+
+    foreach(QGraphicsTextItem *item, available_lemmings_class_changes_as_text_items)
+    {
+        QGraphicsItem *temp_item = qgraphicsitem_cast<QGraphicsItem*>(item);
+        map -> removeItem(temp_item);
+    }
+
+    foreach(QGraphicsTextItem *item, lemmings_classes_names)
+    {
+        QGraphicsItem *temp_item = qgraphicsitem_cast<QGraphicsItem*>(item);
+        map -> removeItem(temp_item);
+    }
+
+    buttons_proxies.clear();
+    class_changing_buttons.clear();
+    available_lemmings_class_changes_as_text_items.clear();
+    lemmings_classes_names.clear();
+    delete score;
+    score = nullptr;
+}
+
 void Game::clear_current_game()
 {
-    //TODO: Check for memory leaks, assert that map can be deleted
     if(timer != nullptr)
     {
         timer -> stop();
@@ -355,38 +401,10 @@ void Game::clear_current_game()
         timer = nullptr;
     }
 
-    foreach(QGraphicsProxyWidget *item, buttons_proxies)
-    {
-        map -> removeItem(item);
-    }
-
-    buttons_proxies.clear();
-    class_changing_buttons.clear();
-
-    QList<QGraphicsTextItem *> temp_list;
-    temp_list.append(available_class_changes_amount_list);
-    temp_list.append(lemmings_classes_names);
-
-    foreach(QGraphicsTextItem* item, temp_list)
-    {
-        QGraphicsItem *temp_item = qgraphicsitem_cast<QGraphicsItem*>(item);
-        map -> removeItem(temp_item);
-
-    }
-    available_class_changes_amount_list.clear();
-    lemmings_classes_names.clear();
-
-    QGraphicsItem *temp_item = qgraphicsitem_cast<QGraphicsItem*>(score);
-    map -> removeItem(temp_item);
+    clear_current_games_GUI();
 
     if(lemmings_alive.isEmpty() == false)
         lemmings_alive.clear();
 
-//    Map *map_to_delete = this -> map;
-
-//    Map *new_map = new Map();
-//    this -> setScene(new_map);
-//    this -> map = new_map;
-
-//    delete map_to_delete;
+    map -> clear();
 }

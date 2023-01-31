@@ -11,3 +11,8 @@ Exit::Exit()
 
     this->setBrush(lgrad);
 }
+
+Exit::~Exit()
+{
+
+}

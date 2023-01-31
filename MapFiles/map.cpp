@@ -2,11 +2,10 @@
 #include "MapFiles/MapComponents/entrance.h"
 #include "MapFiles/MapComponents/exit.h"
 
-#include <QDebug>
 Map::Map()
 {
     this -> setSceneRect(0,0,map_width,map_height);
-    QPixmap background(":/graphics/map_background_2");
+    QPixmap background(":/graphics/background");
     setBackgroundBrush(background.scaled(map_width, map_height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 }
 

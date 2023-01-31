@@ -4,8 +4,6 @@
 #include "MapFiles/MapComponents/exit.h"
 #include "game.h"
 
-#include <QDebug>
-
 ClimberLemming::ClimberLemming()
 {
     this -> setPixmap(QPixmap(":/graphics/ClimberLemming"));

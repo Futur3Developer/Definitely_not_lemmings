@@ -8,6 +8,7 @@ class Score: public QGraphicsTextItem
 {
 public:
     Score(QGraphicsItem *parent=0);
+    ~Score();
     void increase_saved_lemmings_counter();
     void increase_dead_lemmings_counter();
 
@@ -17,6 +18,7 @@ private:
     void add_lemmings_to_save_text();
     void add_saved_lemmings_text();
     void add_remaining_lemmings_to_save_text();
+    void decrease_remaining_lemmings_to_save_counter();
 
     int saved_lemmings;
     int lemmings_to_save;
@@ -26,7 +28,7 @@ private:
     int remaining_lemmings_to_save;
     QGraphicsTextItem *remaining_lemmings_to_save_text;
 
-    void decrease_remaining_lemmings_to_save_counter();
+
 };
 
 #endif // SCORE_H
