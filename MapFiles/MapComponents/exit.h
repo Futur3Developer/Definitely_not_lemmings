@@ -4,17 +4,20 @@
 #include <QGraphicsItem>
 #include <QBrush>
 
-//Exit - part of the map, lemmings are supposed to get there
+/**
+ * Rescue point for lemmings. Required component of Map instance to start game.
+ * Lemming colliding with it is equivalent to lemmings saved.
+ */
 class Exit: public QGraphicsRectItem
 {
 public:
     Exit();
+    ~Exit();
 
     enum { Type = UserType + 3 };
 
     int type() const override { return Type; }
 
-    //TODO: Method for score update on lemmings collision
 private:
 };
 

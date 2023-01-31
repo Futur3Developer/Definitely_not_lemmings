@@ -2,7 +2,6 @@
 #include "game.h"
 
 #include <QFont>
-#include <QDebug>
 
 void Score::add_saved_lemmings_text()
 {
@@ -42,6 +41,12 @@ Score::Score(QGraphicsItem *parent): QGraphicsTextItem(parent)
 
     if(saved_lemmings == lemmings_to_save)
         show_text_after_winning_the_game();
+}
+
+
+Score::~Score()
+{
+    delete remaining_lemmings_to_save_text;
 }
 
 void Score::decrease_remaining_lemmings_to_save_counter()

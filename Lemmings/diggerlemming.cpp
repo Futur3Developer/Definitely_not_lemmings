@@ -3,7 +3,6 @@
 #include "MapFiles/MapComponents/exit.h"
 #include "game.h"
 #include <QRandomGenerator>
-#include <QDebug>
 
 DiggerLemming::DiggerLemming()
 {

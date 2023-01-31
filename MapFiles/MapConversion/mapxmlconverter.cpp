@@ -1,9 +1,14 @@
 #include "mapxmlconverter.h"
-#include <QDebug>
+#include "qdebug.h"
 
 MapXMLconverter::MapXMLconverter()
 {
     map_components = new QStringList;
+}
+
+MapXMLconverter::~MapXMLconverter()
+{
+    delete map_components;
 }
 
 void MapXMLconverter::save_map_to_XML(QSharedPointer<QXmlStreamWriter> writerXML, QString entrance_position, QString exit_position,
@@ -54,7 +59,13 @@ QStringList *MapXMLconverter::load_data_from_XML( QSharedPointer<QXmlStreamReade
 
     if(readerXML->name() == "blocks")
     {
-        map_components->append(readerXML->readElementText());
+        //In case someone really wants Map with Entrance and Exit only
+        QString temp = readerXML -> readElementText();
+        if(temp.isEmpty())
+            map_components->append("null");
+        else
+            map_components->append(temp);
+
         readerXML->readNextStartElement();
     }
     else {return dummy_map_components;};
@@ -103,7 +114,7 @@ void MapXMLconverter::save_map_to_file(QSharedPointer<QFile> map_file, Map* map)
         }
     }
 
-    foreach(int lemmings_class_changes_available, map -> available_lemmings_class_changes_list)
+    foreach(int lemmings_class_changes_available, map -> available_lemmings_class_changes)
         lemmings_class_changes_available_to_text += QString::number(lemmings_class_changes_available) + ";";
 
     lemmings_survival_rate = QString::number(map ->lemmings_to_spawn) + ";" + QString::number(map ->lemmings_to_save);
@@ -124,9 +135,8 @@ Map *MapXMLconverter::load_map_from_file(QSharedPointer<QFile> map_file)
     Map* dummy_map = nullptr;
 
     if(load_data_from_XML(readerXML) == nullptr)
-    {
         return dummy_map;
-    }
+
 
     Map *map = prepare_map();
 
@@ -136,6 +146,7 @@ Map *MapXMLconverter::load_map_from_file(QSharedPointer<QFile> map_file)
 Map *MapXMLconverter::prepare_map()
 {
     Map* map = new Map();
+
     QStringList entrance_position_split = map_components->at(0).split(',');
     QStringList exit_position_split = map_components->at(1).split(',');
     QStringList blocks_positions_split = map_components->at(2).split(';');
@@ -145,17 +156,21 @@ Map *MapXMLconverter::prepare_map()
     map -> add_entrance(entrance_position_split[0].toInt(), entrance_position_split[1].toInt());
     map -> add_exit(exit_position_split[0].toInt(), exit_position_split[1].toInt());
 
-    for(int i = 0; i < blocks_positions_split.length(); i++)
+    if(map_components->at(2) != "null")
     {
-        QStringList temp = blocks_positions_split[i].split(',');
-        map -> add_block(temp[0].toInt(), temp[1].toInt());
+        for(int i = 0; i < blocks_positions_split.length(); i++)
+        {
+            QStringList temp = blocks_positions_split[i].split(',');
+            map -> add_block(temp[0].toInt(), temp[1].toInt());
+        }
     }
 
     for(int i =0; i < lemmings_class_changes_available.length(); i++)
-        map -> available_lemmings_class_changes_list.append(lemmings_class_changes_available.at(i).toInt());
+        map -> available_lemmings_class_changes.append(lemmings_class_changes_available.at(i).toInt());
 
     map -> lemmings_to_spawn = lemmings_survival_rate.at(0).toInt();
     map -> lemmings_to_save = lemmings_survival_rate.at(1).toInt();
 
+    map_components->clear();
     return map;
 }

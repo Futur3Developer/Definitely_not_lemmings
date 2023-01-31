@@ -16,7 +16,6 @@
 #include <QImage>
 #include <QKeyEvent>
 #include <QGraphicsSceneMouseEvent>
-#include <QDebug>
 
 Lemming::Lemming()
 {
@@ -40,7 +39,7 @@ void Lemming::keyPressEvent(QKeyEvent *event)
     if(event_key < Qt::Key_1 || event_key > Qt::Key_7)
         return;
 
-    int current_available_class_changes_amount = Game::Get().get_map() -> available_lemmings_class_changes_list[event_key - Qt::Key_1];
+    int current_available_class_changes_amount = Game::Get().get_available_lemmings_class_changes(event_key - Qt::Key_1);
 
     if(accept_class_change == false || current_available_class_changes_amount == 0)
         return;
@@ -83,10 +82,9 @@ void Lemming::keyPressEvent(QKeyEvent *event)
 
     QPushButton *button_corresponding_to_performed_class_change = Game::Get().class_changing_buttons[event_key - Qt::Key_1];
     button_corresponding_to_performed_class_change -> animateClick();
+    Game::Get().decrease_available_lemmings_class_changes(event_key - Qt::Key_1);
 
     int new_available_class_changes_amount = current_available_class_changes_amount - 1;
-    Game::Get().get_map() -> available_lemmings_class_changes_list[event_key - Qt::Key_1] = new_available_class_changes_amount;
-    Game::Get().available_class_changes_amount_list[event_key - Qt::Key_1] -> setPlainText(QString::number(new_available_class_changes_amount));
 
     if(new_available_class_changes_amount == 0)
         button_corresponding_to_performed_class_change -> setEnabled(false);
@@ -106,7 +104,7 @@ void Lemming::change_class(Lemming *lemming)
         adjust_position_for_lemmings_height_difference(lemming);
 
     Game::Get().get_map()->addItem(lemming);
-    Game::Get().update_list(this, lemming);
+    Game::Get().update_lemmings_alive_list(this, lemming);
     lemming -> setOpacity(1);
     lemming -> setFlag(ItemIsFocusable, false);
 
@@ -172,7 +170,7 @@ void Lemming::safely_delete_lemming(bool lemming_was_saved)
 
     this -> hide();
     this -> setFlag(ItemIsFocusable, false);
-    Game::Get().update_list(this, nullptr);
+    Game::Get().update_lemmings_alive_list(this, nullptr);
     this -> deleteLater();
 }
 

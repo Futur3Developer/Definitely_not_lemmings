@@ -17,6 +17,11 @@ Entrance::Entrance()
     this->setBrush(lgrad);
 }
 
+Entrance::~Entrance()
+{
+
+}
+
 
 void Entrance::spawn_lemming(bool delay_should_be_applied)
 {
@@ -24,7 +29,7 @@ void Entrance::spawn_lemming(bool delay_should_be_applied)
         delay_spawn(1500);
 
     Map* map = Game::Get().get_map();
-    QList<Lemming*> *lemmings_alive = Game::Get().get_lemmings_alive_pointer();
+    QList<Lemming*> *lemmings_alive = Game::Get().get_lemmings_alive();
     QPointF entrance_pos = this -> pos();
     int entrance_height = this -> boundingRect().height();
 

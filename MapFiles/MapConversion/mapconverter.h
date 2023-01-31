@@ -3,6 +3,9 @@
 
 #include "mapconversionmanager.h"
 
+/**
+ * Abstract class to be inherited by classes implementing serialization and deserialization of Map instances for particular file types.
+ */
 class MapConverter
 {
 public:

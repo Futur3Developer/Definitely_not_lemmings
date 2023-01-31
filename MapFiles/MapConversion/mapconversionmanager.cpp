@@ -6,7 +6,10 @@ MapConversionManager::MapConversionManager()
 {
     file_types_supported = new QStringList;
 
-    //TODO-extension.1: support runtime search of supported file types based on existing MapConverter child classes
+    /*
+     * Support of runtime search of supported map file types based on existing MapConverter child classes was considered as an option.
+     * The idea was deemed unnecessary and dropped but the arrangements stayed.
+    */
     file_types_supported -> append("*.xml");
     const_file_types_supported = file_types_supported;
 }
@@ -24,9 +27,7 @@ void MapConversionManager::process_map_saving_request(MapCreator* map_creator)
         bool default_users_maps_directory_is_prepared = assert_that_map_can_be_saved_in_default_directory(user_maps_directory);
 
         if(!(default_users_maps_directory_is_prepared))
-        {
             user_maps_directory_path = backup_directory_path;
-        }
     }
 
     QString map_file_path = get_map_file_path(QFileDialog::AnyFile, QFileDialog::AcceptSave, "Map_Saving", user_maps_directory_path);
@@ -40,12 +41,11 @@ void MapConversionManager::process_map_saving_request(MapCreator* map_creator)
     if(!(map_file_path_is_valid))
         return;
 
-    //TODO-extension.1: The part to choose which child class should be used
     MapConverter *map_converter = new MapXMLconverter;
     map_converter -> save_map_to_file(map_file, map_creator -> get_map());
+    delete map_converter;
 }
 
-//Method which both returns a value and MAY provide side effects (creating a directory) - BUT this should happen only once.
 bool MapConversionManager::assert_that_map_can_be_saved_in_default_directory(QFileInfo user_maps_directory)
 {
     if(user_maps_directory.exists())
@@ -114,9 +114,9 @@ Map *MapConversionManager::process_map_loading_request(QWidget *caller)
         return dummy_map;
     }
 
-    //TODO-extension.1: The part to choose which child class should be used
     MapConverter *map_converter = new MapXMLconverter;
     Map* map = map_converter -> load_map_from_file(map_file);
+    delete map_converter;
 
     if(map == nullptr)
     {
