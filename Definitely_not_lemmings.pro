@@ -69,12 +69,4 @@ DISTFILES += \
     Levels/level_1.xml \
     Levels/level_2.xml \
     Levels/level_3.xml \
-    UserMaps/user_map_0.xml \
-    UserMaps/user_map_1.xml \
-    UserMaps/user_map_2.xml \
-    UserMaps/user_map_3.xml \
-    graphics/BlockerLemming.png \
-    graphics/ClimberLemming.png \
-    graphics/ParatropperLemming_parachute_closed.png \
-    graphics/ParatropperLemming_parachute_open.png \
-    graphics/lemming_right.png
+
